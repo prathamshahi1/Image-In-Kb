@@ -1,0 +1,24 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Allow: /compress
+Allow: /resize
+Allow: /convert
+Allow: /editor
+Allow: /batch
+Allow: /tools
+Allow: /compress-image-to-50kb
+Allow: /compress-image-to-100kb
+Allow: /compress-image-to-200kb
+Allow: /passport-photo
+Allow: /signature-compressor
+Allow: /calculator
+Allow: /about
+Allow: /privacy-policy
+Allow: /terms
+Allow: /contact
+
+# Disallow private user dashboard
+Disallow: /dashboard
+
+Sitemap: https://imageinkb.com/sitemap.xml
