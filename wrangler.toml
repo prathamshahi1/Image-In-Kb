@@ -1,0 +1,6 @@
+name = "image-in-kb"
+compatibility_date = "2026-08-29"
+
+[assets]
+directory = "./client/dist"
+binding = "ASSETS"
