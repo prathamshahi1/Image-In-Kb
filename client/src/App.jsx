@@ -49,7 +49,51 @@ export default function App() {
                 {/* Tools Directory */}
                 <Route path="/tools" element={<ToolsHub />} />
 
-                {/* Specialized SEO Preset Routes */}
+                {/* High-Intent SEO Landing Routes (Exact Google Search Match) */}
+                <Route
+                  path="/reduce-image-in-kb"
+                  element={
+                    <SeoPresetCompressor
+                      targetKb={100}
+                      title="Reduce Image Size in KB/MB Online"
+                      subtitle="Reduce JPG, PNG, and WebP images to exact target KB (20KB, 50KB, 100KB, 200KB) online for free without losing quality."
+                      canonicalUrl="https://imageinkb.com/reduce-image-in-kb"
+                    />
+                  }
+                />
+                <Route
+                  path="/reduce-image-size-in-kb"
+                  element={
+                    <SeoPresetCompressor
+                      targetKb={50}
+                      title="Reduce Image Size in KB Online"
+                      subtitle="Easily reduce image file sizes to exact KB limits for official exam portals, job forms, and websites."
+                      canonicalUrl="https://imageinkb.com/reduce-image-size-in-kb"
+                    />
+                  }
+                />
+                <Route
+                  path="/resize-image-to-kb"
+                  element={
+                    <SeoPresetCompressor
+                      targetKb={100}
+                      title="Resize Image to KB or MB Online for Free"
+                      subtitle="Resize and compress photos to any target file size specified in KB or MB in 1 click."
+                      canonicalUrl="https://imageinkb.com/resize-image-to-kb"
+                    />
+                  }
+                />
+                <Route
+                  path="/compress-image-to-20kb"
+                  element={
+                    <SeoPresetCompressor
+                      targetKb={20}
+                      title="Compress Image to 20 KB"
+                      subtitle="Strict 20 KB compression preset designed specifically for government signatures and exam forms."
+                      canonicalUrl="https://imageinkb.com/compress-image-to-20kb"
+                    />
+                  }
+                />
                 <Route
                   path="/compress-image-to-50kb"
                   element={
@@ -57,6 +101,7 @@ export default function App() {
                       targetKb={50}
                       title="Compress Image to 50 KB"
                       subtitle="Reduce image size strictly under 50 KB for official portals, exams, and job applications."
+                      canonicalUrl="https://imageinkb.com/compress-image-to-50kb"
                     />
                   }
                 />
@@ -67,6 +112,7 @@ export default function App() {
                       targetKb={100}
                       title="Compress Image to 100 KB"
                       subtitle="Optimal high-speed web compression strictly under 100 KB with razor-sharp quality."
+                      canonicalUrl="https://imageinkb.com/compress-image-to-100kb"
                     />
                   }
                 />
@@ -77,6 +123,7 @@ export default function App() {
                       targetKb={200}
                       title="Compress Image to 200 KB"
                       subtitle="Compress high-resolution photos down to 200 KB for websites, forms, and social media."
+                      canonicalUrl="https://imageinkb.com/compress-image-to-200kb"
                     />
                   }
                 />
