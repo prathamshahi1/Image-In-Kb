@@ -54,7 +54,7 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: 'Home', path: '/', icon: Home, exact: true },
+    { name: 'Home', path: '/', icon: Home },
     { name: 'Compress', path: '/compress', icon: Target },
     { name: 'Resize', path: '/resize', icon: Scaling },
     { name: 'Convert', path: '/convert', icon: RefreshCw },
@@ -86,9 +86,7 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
             const isHome = link.path === '/';
-            const isActive = isHome
-              ? location.pathname === '/' || location.pathname === '/compress'
-              : location.pathname === link.path;
+            const isActive = location.pathname === link.path;
 
             return (
               <Link
@@ -207,9 +205,7 @@ export default function Navbar() {
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isHome = link.path === '/';
-              const isActive = isHome
-                ? location.pathname === '/' || location.pathname === '/compress'
-                : location.pathname === link.path;
+              const isActive = location.pathname === link.path;
 
               return (
                 <Link
