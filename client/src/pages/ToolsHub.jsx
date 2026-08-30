@@ -80,12 +80,12 @@ const ALL_TOOLS = [
     badge: 'Creative'
   },
   {
-    id: 'batch',
-    title: 'Batch Processor (ZIP)',
+    id: 'zipimg',
+    title: 'ZipImg (ZIP Archive)',
     desc: 'Process up to 20 images concurrently and download as a ZIP archive.',
-    path: '/batch',
+    path: '/zipimg',
     icon: Layers,
-    badge: 'Batch'
+    badge: 'Bulk ZIP'
   },
   {
     id: 'calculator',

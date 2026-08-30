@@ -39,6 +39,7 @@ export default function App() {
                 <Route path="/resize" element={<Resizer />} />
                 <Route path="/convert" element={<Converter />} />
                 <Route path="/editor" element={<Editor />} />
+                <Route path="/zipimg" element={<Batch />} />
                 <Route path="/batch" element={<Batch />} />
                 <Route path="/calculator" element={<Calculator />} />
 

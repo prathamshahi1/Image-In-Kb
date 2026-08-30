@@ -34,7 +34,7 @@ export default function Footer() {
               <li><Link to="/resize" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Smart Image Resizer</Link></li>
               <li><Link to="/convert" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Format Converter (WebP/JPG)</Link></li>
               <li><Link to="/editor" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Crop & Rotate Editor</Link></li>
-              <li><Link to="/batch" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Batch ZIP Processor</Link></li>
+              <li><Link to="/zipimg" className="hover:text-indigo-600 dark:hover:text-white transition-colors">ZipImg (Bulk ZIP)</Link></li>
             </ul>
           </div>
 

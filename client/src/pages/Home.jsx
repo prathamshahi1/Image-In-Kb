@@ -37,9 +37,9 @@ const QUICK_TOOLS = [
     icon: Crop
   },
   {
-    title: 'Batch ZIP Archive',
+    title: 'ZipImg Compressor',
     desc: 'Process up to 20 images concurrently in a single ZIP.',
-    path: '/batch',
+    path: '/zipimg',
     icon: Layers
   }
 ];
@@ -253,8 +253,8 @@ export default function Home() {
             <span>Your photos are processed in temporary RAM buffers and never stored on any database or disk.</span>
           </div>
         </div>
-        <Link to="/batch" className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white font-medium hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors whitespace-nowrap">
-          Try Batch Mode (ZIP)
+        <Link to="/zipimg" className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white font-medium hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors whitespace-nowrap">
+          Try ZipImg (ZIP)
         </Link>
       </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Layers, Download, CheckCircle2, AlertCircle, Sparkles, ArrowRight, Trash2, Home, RefreshCcw } from 'lucide-react';
+import { FileArchive, Download, CheckCircle2, AlertCircle, Sparkles, ArrowRight, Trash2, Home, RefreshCcw } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 import { formatBytes } from '../utils/formatters';
 import { processBatchApi } from '../services/api';
@@ -53,10 +53,10 @@ export default function Batch() {
       if (result.success) {
         setBatchResult(result.data);
       } else {
-        setErrorToast(result.message || 'Batch processing failed.');
+        setErrorToast(result.message || 'ZipImg processing failed.');
       }
     } catch (err) {
-      setErrorToast(err.response?.data?.message || err.message || 'Batch error occurred');
+      setErrorToast(err.response?.data?.message || err.message || 'Error occurred');
     } finally {
       setIsProcessing(false);
     }
@@ -66,7 +66,7 @@ export default function Batch() {
     if (!batchResult?.zipBase64) return;
     const link = document.createElement('a');
     link.href = `data:application/zip;base64,${batchResult.zipBase64}`;
-    link.download = batchResult.zipFilename || `imageinkb-batch-${Date.now()}.zip`;
+    link.download = batchResult.zipFilename || `imageinkb-zipimg-${Date.now()}.zip`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -87,18 +87,18 @@ export default function Batch() {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
-        title="Batch Image Processor — Compress Multiple Images to ZIP | Image In Kb"
+        title="ZipImg — Compress Multiple Images to ZIP Archive | Image In Kb"
         description="Process up to 20 images concurrently in parallel in-memory streams and download a compressed ZIP archive in seconds."
-        canonicalUrl="https://imageinkb.com/batch"
+        canonicalUrl="https://imageinkb.com/zipimg"
       />
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 text-xs font-semibold">
-          <Layers className="w-3.5 h-3.5" /> High-Throughput Batch Engine
+          <FileArchive className="w-3.5 h-3.5" /> High-Throughput ZipImg Engine
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Batch Image <span className="text-indigo-600 dark:text-indigo-400">Processor</span>
+          Zip<span className="text-indigo-600 dark:text-indigo-400">Img</span> Compressor
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Upload up to 20 images to compress in parallel and download a unified ZIP archive.
@@ -126,7 +126,7 @@ export default function Batch() {
             </div>
             <div className="space-y-1">
               <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                Batch Processed Successfully! 🎉
+                ZipImg Processed Successfully! 🎉
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                 Optimized <strong className="text-slate-900 dark:text-white font-semibold">{files.length} images</strong> ({batchResult.totalOriginalFormattedSize} → <strong className="text-emerald-600 dark:text-emerald-400">{batchResult.totalProcessedFormattedSize}</strong>) into a single ZIP archive.
@@ -185,7 +185,7 @@ export default function Batch() {
               />
               <div className="space-y-2 pointer-events-none">
                 <div className="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
-                  <Layers className="w-6 h-6" />
+                  <FileArchive className="w-6 h-6" />
                 </div>
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   Drop up to 20 images here, or <span className="text-indigo-600 dark:text-indigo-400 underline">browse</span>
@@ -269,7 +269,7 @@ export default function Batch() {
                     {isProcessing ? (
                       <>
                         <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
-                        <span>Processing Batch...</span>
+                        <span>Processing ZipImg...</span>
                       </>
                     ) : (
                       <>

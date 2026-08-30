@@ -14,7 +14,7 @@ import {
   Scaling,
   RefreshCw,
   Crop,
-  Layers,
+  FileArchive,
   Wrench
 } from 'lucide-react';
 import { checkServerHealth } from '../services/api';
@@ -59,7 +59,7 @@ export default function Navbar() {
     { name: 'Resize', path: '/resize', icon: Scaling },
     { name: 'Convert', path: '/convert', icon: RefreshCw },
     { name: 'Editor', path: '/editor', icon: Crop },
-    { name: 'Batch', path: '/batch', icon: Layers },
+    { name: 'ZipImg', path: '/zipimg', icon: FileArchive },
     { name: 'All Tools', path: '/tools', icon: Wrench }
   ];
 
@@ -86,7 +86,9 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map((link) => {
             const isHome = link.path === '/';
-            const isActive = location.pathname === link.path;
+            const isActive = link.path === '/zipimg'
+              ? location.pathname === '/zipimg' || location.pathname === '/batch'
+              : location.pathname === link.path;
 
             return (
               <Link
@@ -205,7 +207,9 @@ export default function Navbar() {
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isHome = link.path === '/';
-              const isActive = location.pathname === link.path;
+              const isActive = link.path === '/zipimg'
+                ? location.pathname === '/zipimg' || location.pathname === '/batch'
+                : location.pathname === link.path;
 
               return (
                 <Link
