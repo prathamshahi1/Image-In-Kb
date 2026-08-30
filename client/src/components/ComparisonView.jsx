@@ -11,9 +11,51 @@ import {
   Sparkles,
   Home,
   ArrowRight,
-  Eye
+  Eye,
+  Share2,
+  FolderDown,
+  Smartphone,
+  Info
 } from 'lucide-react';
 import ComparisonSlider from './ComparisonSlider';
+
+/**
+ * Robust cross-platform downloader that converts Base64 DataURIs to binary Blobs
+ * and initiates ObjectURL downloads (supported across iOS Safari, Android Chrome, and Desktop).
+ */
+const downloadDataUri = (dataUri, filename) => {
+  try {
+    const arr = dataUri.split(',');
+    const mimeMatch = arr[0].match(/:(.*?);/);
+    const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    const blob = new Blob([u8arr], { type: mime });
+    const blobUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      URL.revokeObjectURL(blobUrl);
+    }, 5000);
+  } catch (err) {
+    const link = document.createElement('a');
+    link.href = dataUri;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
 
 export default function ComparisonView({
   result,
@@ -23,6 +65,7 @@ export default function ComparisonView({
   const navigate = useNavigate();
   const [viewMode, setViewMode] = useState('side_by_side'); // 'side_by_side' | 'slider'
   const [isDownloaded, setIsDownloaded] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
 
   const { original, compressed } = result;
   const isEnlarged = compressed?.isEnlarged || (compressed?.sizeBytes > (original?.sizeBytes || 0));
@@ -32,18 +75,46 @@ export default function ComparisonView({
 
   const originalUrl = original?.previewUrl || original?.dataUri;
   const processedUrl = compressed?.dataUri;
+  const targetFilename = compressed?.filename || `optimized-${original?.name || 'image.jpg'}`;
 
   const handleDownload = () => {
     if (!processedUrl) return;
-    const link = document.createElement('a');
-    link.href = processedUrl;
-    link.download = compressed.filename || `optimized-${original.name || 'image.jpg'}`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    // Switch to the Downloaded Success screen as requested by user
+    downloadDataUri(processedUrl, targetFilename);
     setIsDownloaded(true);
+  };
+
+  const handleNativeShare = async () => {
+    if (!processedUrl) return;
+    try {
+      const arr = processedUrl.split(',');
+      const mime = (arr[0].match(/:(.*?);/) || [])[1] || 'image/jpeg';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) u8arr[n] = bstr.charCodeAt(n);
+      const blob = new Blob([u8arr], { type: mime });
+      const file = new File([blob], targetFilename, { type: mime });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'Optimized Image - Image In Kb',
+          text: `Optimized image (${compressed.formattedSize})`
+        });
+        setShareSuccess(true);
+      } else {
+        // Fallback: Open image in new window so mobile users can long-press to save directly to Photos
+        const imageWindow = window.open();
+        imageWindow.document.write(`
+          <div style="text-align:center;padding:20px;font-family:system-ui,sans-serif;background:#0b0f19;color:#fff;">
+            <p style="font-size:14px;margin-bottom:12px;">📱 <strong>Press and hold (long-press)</strong> the photo below and tap <strong>"Save to Photos"</strong> or <strong>"Download Image"</strong>:</p>
+            <img src="${processedUrl}" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5);"/>
+          </div>
+        `);
+      }
+    } catch (err) {
+      console.warn('Share error fallback:', err);
+    }
   };
 
   const handleGoHome = () => {
@@ -53,11 +124,11 @@ export default function ComparisonView({
   };
 
   // =========================================================================
-  // VIEW 1: POST-DOWNLOAD SUCCESS SCREEN (When user clicks Download)
+  // VIEW 1: POST-DOWNLOAD SUCCESS SCREEN (With Clear Mobile Location Guide)
   // =========================================================================
   if (isDownloaded) {
     return (
-      <div className="py-8 px-4 max-w-xl mx-auto text-center space-y-6 animate-fade-in text-slate-800 dark:text-slate-200">
+      <div className="py-6 px-4 max-w-xl mx-auto text-center space-y-6 animate-fade-in text-slate-800 dark:text-slate-200">
         
         {/* Success Icon */}
         <div className="w-16 h-16 rounded-3xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 animate-bounce">
@@ -67,10 +138,10 @@ export default function ComparisonView({
         {/* Heading */}
         <div className="space-y-1.5">
           <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-            Image Downloaded Successfully! 🎉
+            Download Started! 🎉
           </h3>
           <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-            Your optimized file <strong className="text-slate-900 dark:text-white font-mono">{compressed.filename || 'image.jpg'}</strong> has been saved to your downloads.
+            Your optimized file <strong className="text-slate-900 dark:text-white font-mono">{targetFilename}</strong> has been saved.
           </p>
         </div>
 
@@ -85,7 +156,7 @@ export default function ComparisonView({
             <div className="space-y-1 flex-1 min-w-0">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                  {compressed.filename || 'optimized-image.jpg'}
+                  {targetFilename}
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300 shrink-0">
                   {compressed.savingsPercent}% Smaller
@@ -101,8 +172,45 @@ export default function ComparisonView({
           </div>
         </div>
 
+        {/* 📱 WHERE IS MY FILE ON MOBILE? (Explicit Helper Card) */}
+        <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-500/30 text-left text-xs space-y-2.5">
+          <div className="flex items-center gap-2 text-indigo-900 dark:text-indigo-300 font-bold">
+            <FolderDown className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <span>Where is my downloaded image on Mobile?</span>
+          </div>
+
+          <div className="space-y-2 text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+            <p>
+              🍏 <strong>iPhone / iPad (iOS Safari)</strong>: Open the <strong>Files App</strong> → tap <strong>Downloads</strong> (or tap the blue download arrow <strong>↓</strong> in your Safari address bar).
+            </p>
+            <p>
+              🤖 <strong>Android</strong>: Pull down your <strong>Notification Bar</strong> or open the <strong>Files / Downloads</strong> app.
+            </p>
+          </div>
+
+          {/* Quick Mobile Action: Direct Share / Save to Camera Roll */}
+          <div className="pt-2 border-t border-indigo-200/60 dark:border-indigo-500/20 flex flex-col sm:flex-row gap-2">
+            <button
+              type="button"
+              onClick={handleNativeShare}
+              className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Save directly to Photos / Share</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDownload}
+              className="w-full py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-800 font-semibold text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download Again</span>
+            </button>
+          </div>
+        </div>
+
         {/* Primary Action Buttons */}
-        <div className="space-y-3 pt-2">
+        <div className="space-y-3 pt-1">
           <button
             onClick={handleGoHome}
             className="w-full py-3.5 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2 transition-all cursor-pointer hover:scale-[1.01]"
@@ -194,7 +302,7 @@ export default function ComparisonView({
         <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
           <button
             onClick={() => setViewMode('side_by_side')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               viewMode === 'side_by_side'
                 ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-white shadow-xs'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -205,7 +313,7 @@ export default function ComparisonView({
           </button>
           <button
             onClick={() => setViewMode('slider')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
               viewMode === 'slider'
                 ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-white shadow-xs'
                 : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
