@@ -7,7 +7,7 @@ export const SUPPORTED_MIME_TYPES = [
 
 export const SUPPORTED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
-export const MAX_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
+export const MAX_FILE_SIZE_BYTES = 200 * 1024 * 1024; // 200 MB
 
 export const STATUS_CODES = {
   OK: 200,

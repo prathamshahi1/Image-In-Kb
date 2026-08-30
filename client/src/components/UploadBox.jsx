@@ -3,7 +3,7 @@ import { UploadCloud, AlertCircle } from 'lucide-react';
 import { formatBytes } from '../utils/formatters';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const MAX_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
+const MAX_SIZE_BYTES = 200 * 1024 * 1024; // 200 MB
 
 export default function UploadBox({
   onImageSelected,
@@ -25,7 +25,7 @@ export default function UploadBox({
     }
 
     if (file.size > MAX_SIZE_BYTES) {
-      setErrorMessage(`File is too large (${formatBytes(file.size)}). Max allowed is 25MB.`);
+      setErrorMessage(`File is too large (${formatBytes(file.size)}). Max allowed is 200MB.`);
       return;
     }
 
@@ -137,7 +137,7 @@ export default function UploadBox({
           Drop your image here, or <span className="text-indigo-600 dark:text-indigo-400 underline">browse</span>
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 font-mono">
-          Supports JPG, PNG, WebP • Paste with Ctrl+V • Up to 25 MB
+          Supports JPG, PNG, WebP • Paste with Ctrl+V • Up to 200 MB
         </p>
 
         <div className="flex items-center gap-2">

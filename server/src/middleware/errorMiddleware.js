@@ -17,7 +17,7 @@ export const errorHandler = (err, req, res, next) => {
       return res.status(STATUS_CODES.BAD_REQUEST).json({
         success: false,
         error: 'FILE_TOO_LARGE',
-        message: 'File size exceeds maximum allowed limit of 25MB.'
+        message: 'File size exceeds maximum allowed limit of 200MB.'
       });
     }
     return res.status(STATUS_CODES.BAD_REQUEST).json({
