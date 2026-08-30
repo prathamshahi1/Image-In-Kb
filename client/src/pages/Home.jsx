@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Scaling,
@@ -59,6 +59,20 @@ export default function Home() {
     outputFormat: 'original'
   });
 
+  const handleReset = () => {
+    setSelectedImage(null);
+    setServerMetadata(null);
+    setCompressionResult(null);
+    setUploadProgress(0);
+  };
+
+  // Listen to the Home / Logo click event to reset state from any step
+  useEffect(() => {
+    const onResetHome = () => handleReset();
+    window.addEventListener('imageinkb:reset-home', onResetHome);
+    return () => window.removeEventListener('imageinkb:reset-home', onResetHome);
+  }, []);
+
   const handleImageSelected = async (clientData) => {
     setSelectedImage(clientData);
     setCompressionResult(null);
@@ -98,13 +112,6 @@ export default function Home() {
     } finally {
       setIsCompressing(false);
     }
-  };
-
-  const handleReset = () => {
-    setSelectedImage(null);
-    setServerMetadata(null);
-    setCompressionResult(null);
-    setUploadProgress(0);
   };
 
   // Structured Data Schema for Google Rich Results

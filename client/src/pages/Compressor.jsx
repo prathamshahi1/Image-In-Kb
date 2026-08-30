@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, AlertCircle } from 'lucide-react';
 import UploadBox from '../components/UploadBox';
 import CompressionControls from '../components/CompressionControls';
@@ -21,6 +21,20 @@ export default function Compressor() {
     manualQuality: 80,
     outputFormat: 'original'
   });
+
+  const handleReset = () => {
+    setSelectedImage(null);
+    setServerMetadata(null);
+    setCompressionResult(null);
+    setUploadProgress(0);
+    setErrorToast(null);
+  };
+
+  useEffect(() => {
+    const onResetHome = () => handleReset();
+    window.addEventListener('imageinkb:reset-home', onResetHome);
+    return () => window.removeEventListener('imageinkb:reset-home', onResetHome);
+  }, []);
 
   const handleImageSelected = async (clientData) => {
     setSelectedImage(clientData);
@@ -65,14 +79,6 @@ export default function Compressor() {
     } finally {
       setIsCompressing(false);
     }
-  };
-
-  const handleReset = () => {
-    setSelectedImage(null);
-    setServerMetadata(null);
-    setCompressionResult(null);
-    setUploadProgress(0);
-    setErrorToast(null);
   };
 
   return (

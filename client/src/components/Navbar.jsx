@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   Sparkles,
+  Home,
   LayoutDashboard,
   LogOut,
   ChevronDown,
@@ -24,7 +25,8 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [serverStatus, setServerStatus] = useState('checking');
+  const location = useLocation();
+  const [serverStatus, setServerStatus] = useState('online');
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -37,14 +39,22 @@ export default function Navbar() {
       }
     };
     verifyBackend();
-    const interval = setInterval(verifyBackend, 20000);
+    const interval = setInterval(verifyBackend, 30000);
     return () => {
       isMounted = false;
       clearInterval(interval);
     };
   }, []);
 
+  // Handle Logo & Home clicks (Navigates to / and resets the upload box if already on /)
+  const handleHomeClick = (e) => {
+    window.dispatchEvent(new CustomEvent('imageinkb:reset-home'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsMobileMenuOpen(false);
+  };
+
   const navLinks = [
+    { name: 'Home', path: '/', icon: Home, exact: true },
     { name: 'Compress', path: '/compress', icon: Target },
     { name: 'Resize', path: '/resize', icon: Scaling },
     { name: 'Convert', path: '/convert', icon: RefreshCw },
@@ -57,8 +67,13 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-[#0b0f19]/90 backdrop-blur-xl transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
+        {/* Logo (Image In Kb) - Always clickable to go Home and reset */}
+        <Link
+          to="/"
+          onClick={handleHomeClick}
+          className="flex items-center gap-2.5 group cursor-pointer"
+          title="Image In Kb - Go to Home Page"
+        >
           <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-600/30 group-hover:scale-105 transition-transform">
             <Sparkles className="w-5 h-5" />
           </div>
@@ -69,21 +84,27 @@ export default function Navbar() {
 
         {/* Desktop Navigation Links */}
         <nav className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className={({ isActive }) =>
-                `px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+          {navLinks.map((link) => {
+            const isHome = link.path === '/';
+            const isActive = isHome
+              ? location.pathname === '/' || location.pathname === '/compress'
+              : location.pathname === link.path;
+
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={isHome ? handleHomeClick : undefined}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-slate-100 dark:bg-slate-800 text-indigo-600 dark:text-white font-semibold'
+                    ? 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-white font-semibold'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/60 dark:hover:bg-slate-800/50'
-                }`
-              }
-            >
-              {link.name}
-            </NavLink>
-          ))}
+                }`}
+              >
+                {link.name}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Right Section: Theme Toggle, Auth & Mobile Hamburger */}
@@ -93,7 +114,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-colors"
+            className="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
             title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             aria-label="Toggle Theme"
           >
@@ -110,7 +131,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setShowUserDropdown(!showUserDropdown)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-xs font-medium text-slate-900 dark:text-white transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 text-xs font-medium text-slate-900 dark:text-white transition-colors cursor-pointer"
               >
                 <div className="w-5 h-5 rounded-md bg-indigo-600 flex items-center justify-center font-bold text-[10px] text-white">
                   {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
@@ -140,7 +161,7 @@ export default function Navbar() {
                       logout();
                       navigate('/');
                     }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-left"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors text-left cursor-pointer"
                   >
                     <LogOut className="w-3.5 h-3.5" />
                     <span>Sign Out</span>
@@ -169,7 +190,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors"
+            className="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
             aria-label="Toggle navigation menu"
           >
             {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -185,22 +206,25 @@ export default function Navbar() {
           <nav className="flex flex-col space-y-1">
             {navLinks.map((link) => {
               const Icon = link.icon;
+              const isHome = link.path === '/';
+              const isActive = isHome
+                ? location.pathname === '/' || location.pathname === '/compress'
+                : location.pathname === link.path;
+
               return (
-                <NavLink
+                <Link
                   key={link.path}
                   to={link.path}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={({ isActive }) =>
-                    `px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors ${
-                      isActive
-                        ? 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-white'
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
-                    }`
-                  }
+                  onClick={isHome ? handleHomeClick : () => setIsMobileMenuOpen(false)}
+                  className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center gap-2.5 transition-colors ${
+                    isActive
+                      ? 'bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-white'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/60'
+                  }`}
                 >
                   <Icon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                   <span>{link.name}</span>
-                </NavLink>
+                </Link>
               );
             })}
           </nav>
@@ -224,7 +248,7 @@ export default function Navbar() {
                     logout();
                     navigate('/');
                   }}
-                  className="px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-between"
+                  className="px-3.5 py-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 text-xs font-semibold flex items-center justify-between cursor-pointer"
                 >
                   <span>Sign Out</span>
                   <LogOut className="w-4 h-4" />
