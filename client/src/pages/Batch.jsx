@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileArchive, Download, CheckCircle2, AlertCircle, Sparkles, ArrowRight, Trash2, Home, RefreshCcw } from 'lucide-react';
+import { FileArchive, Download, CheckCircle2, AlertCircle, Sparkles, Trash2, Home, RefreshCcw } from 'lucide-react';
 import SeoHead from '../components/SeoHead';
 import { formatBytes } from '../utils/formatters';
 import { processBatchApi } from '../services/api';
 
 const MAX_BATCH_FILES = 20;
 
-export default function Batch() {
+export default function Batch({
+  title = 'ZipImg Compressor',
+  subtitle = 'Upload up to 20 images to compress in parallel and download a unified ZIP archive.',
+  canonicalUrl = 'https://imageinkb.com/zipimg',
+  badge = 'High-Throughput ZipImg Engine'
+}) {
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [targetKb, setTargetKb] = useState(100);
@@ -87,21 +92,21 @@ export default function Batch() {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
-        title="ZipImg — Compress Multiple Images to ZIP Archive | Image In Kb"
-        description="Process up to 20 images concurrently in parallel in-memory streams and download a compressed ZIP archive in seconds."
-        canonicalUrl="https://imageinkb.com/zipimg"
+        title={`${title} — Free Online Tool | Image In Kb`}
+        description={subtitle}
+        canonicalUrl={canonicalUrl}
       />
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 text-xs font-semibold">
-          <FileArchive className="w-3.5 h-3.5" /> High-Throughput ZipImg Engine
+          <FileArchive className="w-3.5 h-3.5" /> {badge}
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Zip<span className="text-indigo-600 dark:text-indigo-400">Img</span> Compressor
+          {title}
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Upload up to 20 images to compress in parallel and download a unified ZIP archive.
+          {subtitle}
         </p>
       </div>
 

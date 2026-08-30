@@ -6,7 +6,12 @@ import ComparisonView from '../components/ComparisonView';
 import SeoHead from '../components/SeoHead';
 import { inspectImageApi, resizeImageApi } from '../services/api';
 
-export default function Resizer() {
+export default function Resizer({
+  title = 'Smart Image Resizer',
+  subtitle = 'Scale pixel dimensions or percentages with crisp Lanczos3 anti-aliasing interpolation.',
+  canonicalUrl = 'https://imageinkb.com/resize',
+  badge = 'High-Fidelity Resizer'
+}) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [serverMetadata, setServerMetadata] = useState(null);
   const [resizedResult, setResizedResult] = useState(null);
@@ -106,21 +111,21 @@ export default function Resizer() {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
-        title="Smart Image Resizer — Scale by Pixels or Percentage | Image In Kb"
-        description="Resize images accurately with Lanczos3 anti-aliasing interpolation. Scale dimensions by exact pixels or percentage while locking aspect ratios."
-        canonicalUrl="https://imageinkb.com/resize"
+        title={`${title} — Free Online Tool | Image In Kb`}
+        description={subtitle}
+        canonicalUrl={canonicalUrl}
       />
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 text-xs font-semibold">
-          <Scaling className="w-3.5 h-3.5" /> High-Fidelity Resizer
+          <Scaling className="w-3.5 h-3.5" /> {badge}
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Smart Image <span className="text-indigo-600 dark:text-indigo-400">Resizer</span>
+          {title}
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Scale pixel dimensions or percentages with crisp Lanczos3 anti-aliasing interpolation.
+          {subtitle}
         </p>
       </div>
 
@@ -132,7 +137,7 @@ export default function Resizer() {
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>{errorToast}</span>
             </div>
-            <button onClick={() => setErrorToast(null)} className="px-2 py-1 bg-rose-100 dark:bg-rose-900/50 rounded text-rose-700 dark:text-rose-300 text-xs font-semibold">
+            <button onClick={() => setErrorToast(null)} className="px-2 py-1 bg-rose-100 dark:bg-rose-900/50 rounded text-rose-700 dark:text-rose-300 text-xs font-semibold cursor-pointer">
               Dismiss
             </button>
           </div>

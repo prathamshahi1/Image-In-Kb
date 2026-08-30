@@ -11,7 +11,6 @@ import {
   Home,
   RefreshCcw,
   Sliders,
-  Eye,
   FileCheck
 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
@@ -20,7 +19,12 @@ import { formatBytes } from '../utils/formatters';
 
 const MAX_PDF_IMAGES = 30;
 
-export default function ImageToPdf() {
+export default function ImageToPdf({
+  title = 'Image to PDF Converter',
+  subtitle = 'Combine single or multiple JPG, PNG, and WebP photos into a clean, ready-to-print PDF document.',
+  canonicalUrl = 'https://imageinkb.com/image-to-pdf',
+  badge = 'High-Resolution PDF Creator'
+}) {
   const navigate = useNavigate();
   const [images, setImages] = useState([]);
   const [pageSize, setPageSize] = useState('a4'); // 'a4' | 'letter' | 'fit'
@@ -60,7 +64,6 @@ export default function ImageToPdf() {
     setErrorToast(null);
 
     try {
-      // Create jsPDF instance
       let pdfOrientation = orientation === 'landscape' ? 'landscape' : 'portrait';
       const doc = new jsPDF({
         orientation: pdfOrientation,
@@ -78,7 +81,6 @@ export default function ImageToPdf() {
       for (let i = 0; i < images.length; i++) {
         const item = images[i];
         
-        // Load image to measure dimensions
         const img = new Image();
         img.src = item.previewUrl;
         await new Promise((resolve) => {
@@ -86,7 +88,6 @@ export default function ImageToPdf() {
           else img.onload = resolve;
         });
 
-        // Add page for 2nd+ image
         if (i > 0) {
           doc.addPage();
         }
@@ -109,11 +110,9 @@ export default function ImageToPdf() {
           renderWidth = printableHeight * imgRatio;
         }
 
-        // Center on page
         const xPos = marginMm + (printableWidth - renderWidth) / 2;
         const yPos = marginMm + (printableHeight - renderHeight) / 2;
 
-        // Render to canvas to apply quality compression factor
         const canvas = document.createElement('canvas');
         canvas.width = imgWidth;
         canvas.height = imgHeight;
@@ -171,21 +170,21 @@ export default function ImageToPdf() {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
-        title="Image to PDF Converter — Convert JPG, PNG to PDF Online | Image In Kb"
-        description="Convert multiple JPG, PNG, and WebP images into a high-quality PDF document for free. Customize page sizes, orientations, and margins."
-        canonicalUrl="https://imageinkb.com/image-to-pdf"
+        title={`${title} — Free Online Tool | Image In Kb`}
+        description={subtitle}
+        canonicalUrl={canonicalUrl}
       />
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 text-xs font-semibold">
-          <FileText className="w-3.5 h-3.5" /> High-Resolution PDF Creator
+          <FileText className="w-3.5 h-3.5" /> {badge}
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Image to <span className="text-indigo-600 dark:text-indigo-400">PDF</span> Converter
+          {title}
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Combine single or multiple JPG, PNG, and WebP photos into a clean, ready-to-print PDF document.
+          {subtitle}
         </p>
       </div>
 

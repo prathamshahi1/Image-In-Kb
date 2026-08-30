@@ -14,7 +14,12 @@ const ASPECT_RATIO_PRESETS = [
   { label: '3:2 Photo', value: '3:2' }
 ];
 
-export default function Editor() {
+export default function Editor({
+  title = 'Crop & Rotate Editor',
+  subtitle = 'Aspect ratio presets, freeform cropping, and 90° lossless rotation in memory.',
+  canonicalUrl = 'https://imageinkb.com/editor',
+  badge = 'Creative Editor'
+}) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [serverMetadata, setServerMetadata] = useState(null);
   const [editedResult, setEditedResult] = useState(null);
@@ -112,21 +117,21 @@ export default function Editor() {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
-        title="Crop & Rotate Image Editor — Free Aspect Ratio Cropper | Image In Kb"
-        description="Crop images with precise aspect ratio presets (1:1, 4:3, 16:9), rotate 90 degrees, and optimize quality with in-memory Sharp processing."
-        canonicalUrl="https://imageinkb.com/editor"
+        title={`${title} — Free Online Tool | Image In Kb`}
+        description={subtitle}
+        canonicalUrl={canonicalUrl}
       />
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 text-xs font-semibold">
-          <CropIcon className="w-3.5 h-3.5" /> Creative Editor
+          <CropIcon className="w-3.5 h-3.5" /> {badge}
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Crop & Rotate <span className="text-indigo-600 dark:text-indigo-400">Editor</span>
+          {title}
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Aspect ratio presets, freeform cropping, and 90° lossless rotation in memory.
+          {subtitle}
         </p>
       </div>
 
@@ -138,7 +143,7 @@ export default function Editor() {
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>{errorToast}</span>
             </div>
-            <button onClick={() => setErrorToast(null)} className="px-2 py-1 bg-rose-100 dark:bg-rose-900/50 rounded text-rose-700 dark:text-rose-300 text-xs font-semibold">
+            <button onClick={() => setErrorToast(null)} className="px-2 py-1 bg-rose-100 dark:bg-rose-900/50 rounded text-rose-700 dark:text-rose-300 text-xs font-semibold cursor-pointer">
               Dismiss
             </button>
           </div>
@@ -185,7 +190,7 @@ export default function Editor() {
                         key={preset.value}
                         type="button"
                         onClick={() => setAspectRatio(preset.value)}
-                        className={`py-2 px-2.5 rounded-xl text-xs font-medium border transition-all ${
+                        className={`py-2 px-2.5 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
                           aspectRatio === preset.value
                             ? 'bg-indigo-50 border-indigo-600 text-indigo-700 ring-1 ring-indigo-600/30 dark:bg-indigo-600/20 dark:border-indigo-500 dark:text-indigo-300'
                             : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:border-slate-300 dark:hover:border-slate-700'
@@ -204,7 +209,7 @@ export default function Editor() {
                   <button
                     type="button"
                     onClick={handleRotate}
-                    className="w-full py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-white text-xs font-semibold border border-slate-200 dark:border-slate-800 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-950 hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-white text-xs font-semibold border border-slate-200 dark:border-slate-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <RotateCw className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
                     <span>Rotate 90° Clockwise ({rotationAngle}°)</span>

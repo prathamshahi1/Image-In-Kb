@@ -6,7 +6,13 @@ import ComparisonView from '../components/ComparisonView';
 import SeoHead from '../components/SeoHead';
 import { inspectImageApi, convertImageApi } from '../services/api';
 
-export default function Converter() {
+export default function Converter({
+  initialTargetFormat = 'webp',
+  title = 'Format Converter',
+  subtitle = 'Seamlessly convert between WebP, PNG, and JPG with instant in-memory processing.',
+  canonicalUrl = 'https://imageinkb.com/convert',
+  badge = 'Next-Gen Converter'
+}) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [serverMetadata, setServerMetadata] = useState(null);
   const [convertedResult, setConvertedResult] = useState(null);
@@ -16,7 +22,7 @@ export default function Converter() {
   const [errorToast, setErrorToast] = useState(null);
 
   const [convertConfig, setConvertConfig] = useState({
-    targetFormat: 'webp',
+    targetFormat: initialTargetFormat,
     quality: 85
   });
 
@@ -90,21 +96,21 @@ export default function Converter() {
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
-        title="Format Converter — Convert to WebP, JPG, PNG | Image In Kb"
-        description="Convert images between WebP, PNG, and JPG formats in milliseconds with adjustable quality factors."
-        canonicalUrl="https://imageinkb.com/convert"
+        title={`${title} — Free Online Tool | Image In Kb`}
+        description={subtitle}
+        canonicalUrl={canonicalUrl}
       />
 
       {/* Header */}
       <div className="text-center max-w-3xl mx-auto space-y-2">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 dark:bg-indigo-500/10 dark:border-indigo-500/20 dark:text-indigo-300 text-xs font-semibold">
-          <RefreshCw className="w-3.5 h-3.5" /> Next-Gen Converter
+          <RefreshCw className="w-3.5 h-3.5" /> {badge}
         </div>
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
-          Format <span className="text-indigo-600 dark:text-indigo-400">Converter</span>
+          {title}
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
-          Seamlessly convert between WebP, PNG, and JPG with instant in-memory processing.
+          {subtitle}
         </p>
       </div>
 
@@ -116,7 +122,7 @@ export default function Converter() {
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
               <span>{errorToast}</span>
             </div>
-            <button onClick={() => setErrorToast(null)} className="px-2 py-1 bg-rose-100 dark:bg-rose-900/50 rounded text-rose-700 dark:text-rose-300 text-xs font-semibold">
+            <button onClick={() => setErrorToast(null)} className="px-2 py-1 bg-rose-100 dark:bg-rose-900/50 rounded text-rose-700 dark:text-rose-300 text-xs font-semibold cursor-pointer">
               Dismiss
             </button>
           </div>
