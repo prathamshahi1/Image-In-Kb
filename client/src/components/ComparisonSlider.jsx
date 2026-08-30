@@ -1,15 +1,19 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Sparkles, MoveHorizontal } from 'lucide-react';
+import { MoveHorizontal } from 'lucide-react';
 
 export default function ComparisonSlider({
   originalUrl,
   processedUrl,
+  compressedUrl,
   originalLabel = 'Original',
   processedLabel = 'Processed'
 }) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
+
+  // Accept either processedUrl or compressedUrl prop
+  const rightImageUrl = processedUrl || compressedUrl;
 
   const handleMove = useCallback((clientX) => {
     if (!containerRef.current) return;
@@ -41,15 +45,15 @@ export default function ComparisonSlider({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onTouchMove={handleTouchMove}
-      className="relative w-full h-[360px] sm:h-[400px] overflow-hidden rounded-2xl bg-slate-950/90 border border-slate-800 select-none cursor-ew-resize group"
+      className="relative w-full h-[380px] sm:h-[460px] overflow-hidden rounded-2xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 select-none cursor-ew-resize group shadow-inner"
     >
-      {/* Background Image: Processed (Right side full base) */}
+      {/* Background Image: Processed (Right side) */}
       <img
-        src={processedUrl}
+        src={rightImageUrl}
         alt={processedLabel}
         className="absolute inset-0 w-full h-full object-contain pointer-events-none"
       />
-      <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-slate-950/80 border border-slate-700/80 text-[11px] font-mono text-emerald-400 font-semibold pointer-events-none z-10">
+      <div className="absolute top-3 right-3 px-3 py-1 rounded-lg bg-white/90 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-700 text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold pointer-events-none z-10 shadow-sm backdrop-blur-xs">
         {processedLabel}
       </div>
 
@@ -67,20 +71,20 @@ export default function ComparisonSlider({
             maxWidth: 'none'
           }}
         />
-        <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-md bg-slate-950/80 border border-slate-700/80 text-[11px] font-mono text-slate-300 font-semibold pointer-events-none z-10">
+        <div className="absolute top-3 left-3 px-3 py-1 rounded-lg bg-white/90 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-700 dark:text-slate-300 font-bold pointer-events-none z-10 shadow-sm backdrop-blur-xs">
           {originalLabel}
         </div>
       </div>
 
       {/* Sliding Divider Line & Handle */}
       <div
-        className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-400 via-cyan-400 to-brand-400 z-20"
+        className="absolute top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-500 via-cyan-400 to-indigo-500 z-20 shadow-md"
         style={{ left: `${sliderPosition}%` }}
       >
         <div
           onMouseDown={handleMouseDown}
           onTouchStart={() => setIsDragging(true)}
-          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-slate-900 border-2 border-cyan-400 shadow-xl shadow-cyan-500/30 flex items-center justify-center text-cyan-300 cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
+          className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white dark:bg-slate-900 border-2 border-indigo-600 dark:border-cyan-400 shadow-xl shadow-indigo-500/30 flex items-center justify-center text-indigo-600 dark:text-cyan-300 cursor-grab active:cursor-grabbing hover:scale-110 transition-transform"
         >
           <MoveHorizontal className="w-4 h-4" />
         </div>
