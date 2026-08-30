@@ -1,17 +1,20 @@
 import axios from 'axios';
+import JSZip from 'jszip';
 import {
   clientInspectImage,
   clientCompressImage,
   clientResizeImage,
   clientConvertImage,
-  clientEditImage
+  clientEditImage,
+  formatBytes,
+  calculateSavingsPercentage
 } from './clientImageEngine';
 
 const REMOTE_URL = import.meta.env.VITE_API_URL;
 const isLocalEnv = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-// Only use Axios network calls if explicitly provided with VITE_API_URL or running on local dev
-const shouldUseNetworkApi = Boolean(REMOTE_URL) || (isLocalEnv && false);
+// Only use Axios network calls if explicitly provided with VITE_API_URL
+const shouldUseNetworkApi = Boolean(REMOTE_URL);
 
 export const apiClient = axios.create({
   baseURL: REMOTE_URL || 'http://localhost:5001',
@@ -110,69 +113,40 @@ export const getMeApi = async () => {
    ========================================================================= */
 
 export const getHistoryApi = async () => {
-  if (!shouldUseNetworkApi) {
-    const local = localStorage.getItem('imageinkb_local_history');
-    return { success: true, data: local ? JSON.parse(local) : [] };
-  }
-  try {
-    const response = await apiClient.get('/api/history');
-    return response.data;
-  } catch (err) {
-    const local = localStorage.getItem('imageinkb_local_history');
-    return { success: true, data: local ? JSON.parse(local) : [] };
-  }
+  const local = localStorage.getItem('imageinkb_local_history');
+  return { success: true, data: local ? JSON.parse(local) : [] };
 };
 
 export const getStatsApi = async () => {
-  if (!shouldUseNetworkApi) {
-    const local = localStorage.getItem('imageinkb_local_history');
-    const items = local ? JSON.parse(local) : [];
-    const totalOriginal = items.reduce((acc, i) => acc + (i.originalSizeBytes || 0), 0);
-    const totalFinal = items.reduce((acc, i) => acc + (i.finalSizeBytes || 0), 0);
-    return {
-      success: true,
-      data: {
-        totalImages: items.length,
-        totalOriginalBytes: totalOriginal,
-        totalCompressedBytes: totalFinal,
-        totalSavedBytes: Math.max(0, totalOriginal - totalFinal),
-        avgSavingsPercent: items.length > 0 ? Math.round((1 - totalFinal / (totalOriginal || 1)) * 100) : 0
-      }
-    };
-  }
-  try {
-    const response = await apiClient.get('/api/history/stats');
-    return response.data;
-  } catch (err) {
-    return {
-      success: true,
-      data: { totalImages: 0, totalOriginalBytes: 0, totalCompressedBytes: 0, totalSavedBytes: 0, avgSavingsPercent: 0 }
-    };
-  }
+  const local = localStorage.getItem('imageinkb_local_history');
+  const items = local ? JSON.parse(local) : [];
+  const totalOriginal = items.reduce((acc, i) => acc + (i.originalSizeBytes || 0), 0);
+  const totalFinal = items.reduce((acc, i) => acc + (i.finalSizeBytes || 0), 0);
+  return {
+    success: true,
+    data: {
+      totalImages: items.length,
+      totalOriginalBytes: totalOriginal,
+      totalCompressedBytes: totalFinal,
+      totalSavedBytes: Math.max(0, totalOriginal - totalFinal),
+      avgSavingsPercent: items.length > 0 ? Math.round((1 - totalFinal / (totalOriginal || 1)) * 100) : 0
+    }
+  };
 };
 
 export const deleteHistoryApi = async (id) => {
-  if (!shouldUseNetworkApi) {
-    const local = localStorage.getItem('imageinkb_local_history');
-    if (local) {
-      const items = JSON.parse(local).filter((i) => i._id !== id && i.id !== id);
-      localStorage.setItem('imageinkb_local_history', JSON.stringify(items));
-    }
-    return { success: true };
+  const local = localStorage.getItem('imageinkb_local_history');
+  if (local) {
+    const items = JSON.parse(local).filter((i) => i._id !== id && i.id !== id);
+    localStorage.setItem('imageinkb_local_history', JSON.stringify(items));
   }
-  try {
-    const response = await apiClient.delete(`/api/history/${id}`);
-    return response.data;
-  } catch (err) {
-    return { success: true };
-  }
+  return { success: true };
 };
 
 /* =========================================================================
    IMAGE OPTIMIZATION API
    ========================================================================= */
 
-// Helper to save to local history for client-side processing
 const recordClientHistory = (entry) => {
   try {
     const raw = localStorage.getItem('imageinkb_local_history');
@@ -359,6 +333,7 @@ export const editImageApi = async (file, options = {}, onProgress) => {
 };
 
 export const processBatchApi = async (files, options = {}, onProgress) => {
+  const zip = new JSZip();
   const processedFiles = [];
   let totalOriginal = 0;
   let totalProcessed = 0;
@@ -376,6 +351,11 @@ export const processBatchApi = async (files, options = {}, onProgress) => {
     }
     const c = res.data.compressed || res.data.resized || res.data.converted;
     totalProcessed += c.sizeBytes;
+
+    // Convert dataUri to binary array and add to JSZip
+    const base64Data = c.dataUri.split(',')[1];
+    zip.file(c.filename, base64Data, { base64: true });
+
     processedFiles.push({
       originalName: f.name,
       filename: c.filename,
@@ -393,6 +373,9 @@ export const processBatchApi = async (files, options = {}, onProgress) => {
     if (onProgress) onProgress(Math.round(((i + 1) / files.length) * 100));
   }
 
+  // Generate the ZIP file as base64
+  const zipBase64 = await zip.generateAsync({ type: 'base64' });
+
   return {
     success: true,
     message: `Batch processed ${processedFiles.length} images successfully.`,
@@ -401,11 +384,16 @@ export const processBatchApi = async (files, options = {}, onProgress) => {
       successfulFiles: processedFiles.length,
       failedFiles: 0,
       totalOriginalBytes: totalOriginal,
-      totalOriginalFormattedSize: clientInspectImage.formatBytes ? clientInspectImage.formatBytes(totalOriginal) : `${(totalOriginal / (1024 * 1024)).toFixed(2)} MB`,
+      totalOriginalFormattedSize: formatBytes(totalOriginal),
       totalProcessedBytes: totalProcessed,
-      totalProcessedFormattedSize: clientInspectImage.formatBytes ? clientInspectImage.formatBytes(totalProcessed) : `${(totalProcessed / (1024 * 1024)).toFixed(2)} MB`,
-      totalSavingsPercent: Math.max(0, Math.round(((totalOriginal - totalProcessed) / (totalOriginal || 1)) * 100)),
+      totalProcessedFormattedSize: formatBytes(totalProcessed),
+      totalSavingsPercent: calculateSavingsPercentage(totalOriginal, totalProcessed),
+      zipBase64,
+      zipFilename: `imageinkb-batch-${Date.now()}.zip`,
       files: processedFiles
     }
   };
 };
+
+// Export alias to prevent naming confusion
+export const batchProcessApi = processBatchApi;
