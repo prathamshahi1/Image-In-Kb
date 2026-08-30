@@ -6,6 +6,7 @@ import {
   RefreshCw,
   Crop,
   Layers,
+  FileText,
   Calculator,
   UserCheck,
   PenTool,
@@ -78,6 +79,14 @@ const ALL_TOOLS = [
     path: '/editor',
     icon: Crop,
     badge: 'Creative'
+  },
+  {
+    id: 'image-to-pdf',
+    title: 'Image to PDF Converter',
+    desc: 'Combine single or multiple JPG, PNG, and WebP images into a high-quality PDF document.',
+    path: '/image-to-pdf',
+    icon: FileText,
+    badge: 'PDF Document'
   },
   {
     id: 'zipimg',

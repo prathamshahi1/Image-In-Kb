@@ -10,6 +10,7 @@ import Resizer from './pages/Resizer';
 import Converter from './pages/Converter';
 import Editor from './pages/Editor';
 import Batch from './pages/Batch';
+import ImageToPdf from './pages/ImageToPdf';
 import Calculator from './pages/Calculator';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -41,6 +42,8 @@ export default function App() {
                 <Route path="/editor" element={<Editor />} />
                 <Route path="/zipimg" element={<Batch />} />
                 <Route path="/batch" element={<Batch />} />
+                <Route path="/image-to-pdf" element={<ImageToPdf />} />
+                <Route path="/img-to-pdf" element={<ImageToPdf />} />
                 <Route path="/calculator" element={<Calculator />} />
 
                 {/* Tools Directory */}

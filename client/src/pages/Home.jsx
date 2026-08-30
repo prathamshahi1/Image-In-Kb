@@ -5,6 +5,7 @@ import {
   RefreshCw,
   Crop,
   Layers,
+  FileText,
   ShieldCheck,
   Zap,
   ArrowRight
@@ -35,6 +36,12 @@ const QUICK_TOOLS = [
     desc: 'Aspect ratio cropping, 90° rotation, and flips.',
     path: '/editor',
     icon: Crop
+  },
+  {
+    title: 'Image to PDF',
+    desc: 'Combine multiple images into a printable PDF document.',
+    path: '/image-to-pdf',
+    icon: FileText
   },
   {
     title: 'ZipImg Compressor',

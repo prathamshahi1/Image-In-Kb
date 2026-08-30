@@ -15,6 +15,7 @@ import {
   RefreshCw,
   Crop,
   FileArchive,
+  FileText,
   Wrench
 } from 'lucide-react';
 import { checkServerHealth } from '../services/api';
@@ -58,6 +59,7 @@ export default function Navbar() {
     { name: 'Compress', path: '/compress', icon: Target },
     { name: 'Resize', path: '/resize', icon: Scaling },
     { name: 'Convert', path: '/convert', icon: RefreshCw },
+    { name: 'Img to PDF', path: '/image-to-pdf', icon: FileText },
     { name: 'Editor', path: '/editor', icon: Crop },
     { name: 'ZipImg', path: '/zipimg', icon: FileArchive },
     { name: 'All Tools', path: '/tools', icon: Wrench }
