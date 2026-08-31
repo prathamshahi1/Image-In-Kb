@@ -1,54 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <!-- Background with modern squircle and rich gradient -->
-  <rect width="64" height="64" rx="16" fill="url(#bg_grad)" />
-  
-  <!-- Subtle inner border highlight -->
-  <rect x="1" y="1" width="62" height="62" rx="15" stroke="url(#border_grad)" stroke-width="1.5" stroke-opacity="0.6"/>
+  <!-- Rounded squircle container with rich indigo color -->
+  <rect width="64" height="64" rx="18" fill="#4F46E5" />
 
-  <!-- Glowing background aura -->
-  <circle cx="44" cy="20" r="14" fill="url(#glow_grad)" opacity="0.4" />
-
-  <!-- Image Photo Frame / Silhouette -->
-  <g filter="url(#drop_shadow)">
-    <!-- Mountain landscape layer 1 -->
-    <path d="M14 44L26 28L34 37L43 25L52 44H14Z" fill="url(#mountain_grad)" />
-    
-    <!-- Mountain landscape layer 2 (foreground depth) -->
-    <path d="M28 44L36 34L44 44H28Z" fill="#FFFFFF" fill-opacity="0.9" />
-
-    <!-- Glowing Sun / Target Aperture -->
-    <circle cx="23" cy="22" r="5" fill="#38BDF8" />
-    <circle cx="23" cy="22" r="2.5" fill="#FFFFFF" />
-
-    <!-- Sparkle / Optimizer badge in top right -->
-    <path d="M47 13L48.8 17.2L53 19L48.8 20.8L47 25L45.2 20.8L41 19L45.2 17.2L47 13Z" fill="#FDE047" />
+  <!-- Centered Sparkles emblem matching website navbar logo -->
+  <g transform="translate(14, 14) scale(1.5)" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+    <path d="M5 3v4" />
+    <path d="M3 5h4" />
+    <path d="M19 17v4" />
+    <path d="M17 19h4" />
   </g>
-
-  <!-- Gradients and Filter Definitions -->
-  <defs>
-    <linearGradient id="bg_grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#4F46E5" />
-      <stop offset="0.55" stop-color="#6366F1" />
-      <stop offset="1" stop-color="#06B6D4" />
-    </linearGradient>
-
-    <linearGradient id="border_grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" stop-opacity="0.8" />
-      <stop offset="1" stop-color="#38BDF8" stop-opacity="0.2" />
-    </linearGradient>
-
-    <radialGradient id="glow_grad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(44 20) rotate(90) scale(14)">
-      <stop stop-color="#38BDF8" />
-      <stop offset="1" stop-color="#38BDF8" stop-opacity="0" />
-    </radialGradient>
-
-    <linearGradient id="mountain_grad" x1="14" y1="25" x2="52" y2="44" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#FFFFFF" />
-      <stop offset="1" stop-color="#E0E7FF" />
-    </linearGradient>
-
-    <filter id="drop_shadow" x="8" y="10" width="48" height="42" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.25"/>
-    </filter>
-  </defs>
 </svg>
