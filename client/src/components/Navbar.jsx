@@ -76,8 +76,8 @@ export default function Navbar() {
           className="flex items-center gap-2.5 group cursor-pointer"
           title="Image In Kb - Go to Home Page"
         >
-          <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-600/30 group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5" />
+          <div className="w-9 h-9 rounded-xl overflow-hidden shadow-md shadow-indigo-600/20 group-hover:scale-105 transition-transform bg-slate-900 border border-slate-700/50 flex items-center justify-center shrink-0">
+            <img src="/logo.png" alt="Image In Kb" className="w-full h-full object-cover" />
           </div>
           <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
             Image In <span className="text-indigo-600 dark:text-indigo-400">Kb</span>
