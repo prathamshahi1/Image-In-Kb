@@ -10,8 +10,8 @@ export default function Footer() {
         {/* Top Trust Row */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pb-8 border-b border-slate-200 dark:border-slate-800/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl overflow-hidden shadow-sm bg-slate-900 border border-slate-700/50 flex items-center justify-center shrink-0">
-              <img src="/logo.png" alt="Image In Kb" className="w-full h-full object-cover" />
+            <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm">
+              <Sparkles className="w-4 h-4" />
             </div>
             <div>
               <span className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Image In Kb</span>
