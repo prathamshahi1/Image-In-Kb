@@ -130,17 +130,14 @@ export default function ContactUs() {
         
         {/* Contact Info Sidebar (5 cols) */}
         <div className="md:col-span-5 space-y-6">
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0e1424]/90 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0e1424]/90 border border-slate-200 dark:border-slate-800 shadow-xs space-y-3">
             <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
               <Mail className="w-5 h-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Direct Inquiries</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Fast Support</h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              All messages are dispatched immediately to our engineering team and answered within 24 business hours.
+              Have any issues, questions, or feedback? Fill out the contact form and our engineering team will receive it immediately and respond directly to your email.
             </p>
-            <div className="pt-2 text-xs font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
-              prathamm0001@gmail.com
-            </div>
           </div>
 
           <div className="p-6 rounded-3xl bg-slate-100/70 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 space-y-3">
