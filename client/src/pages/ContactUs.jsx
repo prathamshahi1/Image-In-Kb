@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, MessageSquare, Send, CheckCircle2, AlertCircle, Sparkles, HelpCircle } from 'lucide-react';
+import { Mail, MessageSquare, Send, CheckCircle2, AlertCircle, Sparkles, HelpCircle, Check } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SeoHead from '../components/SeoHead';
 
@@ -14,17 +14,35 @@ export default function ContactUs() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    // Simulate reliable dispatch
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success !== false) {
+        setIsSubmitted(true);
+        setFormData({ name: '', email: '', subject: 'General Question', message: '' });
+      } else {
+        setErrorMessage(result.message || 'Failed to send message. Please try again or email us directly.');
+      }
+    } catch (err) {
+      // Fallback: If running offline or network error, simulate graceful delivery
+      console.error('Contact submission error:', err);
+      setErrorMessage('Network connection error. Please try again.');
+    } finally {
       setIsSubmitting(false);
-      setIsSubmitted(true);
-      setFormData({ name: '', email: '', subject: 'General Question', message: '' });
-    }, 600);
+    }
   };
 
   return (
@@ -58,10 +76,10 @@ export default function ContactUs() {
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-white">Direct Inquiries</h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Our engineering team responds to all inquiries within 24–48 business hours.
+              All messages are dispatched immediately to our engineering team and answered within 24 business hours.
             </p>
             <div className="pt-2 text-xs font-mono text-indigo-600 dark:text-indigo-400 font-semibold">
-              support@imageinkb.com
+              prathamm0001@gmail.com
             </div>
           </div>
 
@@ -84,19 +102,35 @@ export default function ContactUs() {
 
         {/* Form Box (7 cols) */}
         <div className="md:col-span-7 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#0e1424]/90 border border-slate-200 dark:border-slate-800 shadow-xs">
+          {errorMessage && (
+            <div className="mb-5 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 dark:bg-rose-950/60 dark:border-rose-500/40 dark:text-rose-200 text-xs flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
+                <span>{errorMessage}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setErrorMessage(null)}
+                className="text-xs font-bold hover:underline"
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
+
           {isSubmitted ? (
             <div className="py-10 text-center space-y-4 animate-fade-in">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
-                <CheckCircle2 className="w-6 h-6" />
+              <div className="w-14 h-14 rounded-3xl bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20 animate-bounce">
+                <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Message Sent Successfully!</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white">Message Sent Successfully! 🎉</h3>
               <p className="text-xs text-slate-600 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
-                Thank you for reaching out. We have received your message and will get back to you shortly.
+                Thank you for reaching out. We have received your message and will reply to your email shortly.
               </p>
               <button
                 type="button"
                 onClick={() => setIsSubmitted(false)}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-slate-800 transition-colors"
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200 dark:border-slate-800 transition-colors cursor-pointer"
               >
                 Send Another Message
               </button>
@@ -112,7 +146,7 @@ export default function ContactUs() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="Alex Morgan"
+                  placeholder="e.g. Rahul Sharma"
                   className="w-full clean-input text-xs"
                 />
               </div>
@@ -126,7 +160,7 @@ export default function ContactUs() {
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="alex@example.com"
+                  placeholder="e.g. rahul@example.com"
                   className="w-full clean-input text-xs"
                 />
               </div>
