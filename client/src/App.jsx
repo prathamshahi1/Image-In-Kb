@@ -369,6 +369,7 @@ export default function App() {
                   path="/name-and-date-on-photo"
                   element={
                     <Editor
+                      initialTextMode={true}
                       title="Add Name and Date on Photo Online Free (DOB / DOP)"
                       subtitle="Easily add Candidate Name and Date of Birth (DOB) or Date of Photo (DOP) on passport size photo for SSC, UPSC, and government exam forms."
                       canonicalUrl="https://imageinkb.com/name-and-date-on-photo"
@@ -380,6 +381,7 @@ export default function App() {
                   path="/add-name-and-date-on-photo"
                   element={
                     <Editor
+                      initialTextMode={true}
                       title="Add Name and Date on Photo for SSC & Govt Forms"
                       subtitle="Add white strip with candidate name and date of birth at the bottom of passport size photo online."
                       canonicalUrl="https://imageinkb.com/add-name-and-date-on-photo"
@@ -391,10 +393,154 @@ export default function App() {
                   path="/passport-photo-name-date"
                   element={
                     <Editor
+                      initialTextMode={true}
                       title="Passport Photo with Name and Date Editor"
                       subtitle="Create standard passport photos with customized candidate name and date stamp."
                       canonicalUrl="https://imageinkb.com/passport-photo-name-date"
                       badge="Exam & Passport Tool"
+                    />
+                  }
+                />
+                <Route
+                  path="/text-on-image"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Text on Image Online Free — Add Text, Name & Captions"
+                      subtitle="Add clean text, candidate names, date stamps, and captions to your photos online without installing software."
+                      canonicalUrl="https://imageinkb.com/text-on-image"
+                      badge="Text on Image"
+                    />
+                  }
+                />
+                <Route
+                  path="/add-text-to-image"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Add Text to Image Online Free"
+                      subtitle="Easily write and insert text, candidate names, and date banners on images in your browser."
+                      canonicalUrl="https://imageinkb.com/add-text-to-image"
+                      badge="Text on Image"
+                    />
+                  }
+                />
+                <Route
+                  path="/write-text-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Write Text on Photo Online"
+                      subtitle="Write names, dates, subtitles, or captions on your photos with customizable font strips."
+                      canonicalUrl="https://imageinkb.com/write-text-on-photo"
+                      badge="Text on Image"
+                    />
+                  }
+                />
+                <Route
+                  path="/add-text-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Add Text on Photo Online Free"
+                      subtitle="Add candidate names, date of birth, and custom text banners to photos."
+                      canonicalUrl="https://imageinkb.com/add-text-on-photo"
+                      badge="Text on Image"
+                    />
+                  }
+                />
+                <Route
+                  path="/edit-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Edit on Photo — Crop, Rotate & Add Text Online"
+                      subtitle="Edit photos online: crop dimensions, rotate orientations, and stamp name and date for application forms."
+                      canonicalUrl="https://imageinkb.com/edit-on-photo"
+                      badge="Photo Edit"
+                    />
+                  }
+                />
+                <Route
+                  path="/edit-photo-online"
+                  element={
+                    <Editor
+                      title="Edit Photo Online Free — Instant In-Browser Image Tool"
+                      subtitle="Free photo editing tool to crop to aspect ratios, rotate 90°, and add name and date stamps."
+                      canonicalUrl="https://imageinkb.com/edit-photo-online"
+                      badge="Photo Edit"
+                    />
+                  }
+                />
+                <Route
+                  path="/photo-name-editor"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Photo Name Editor — Add Name on Passport Photos"
+                      subtitle="Write candidate names and dates directly on passport photos for SSC, UPSC, and government exams."
+                      canonicalUrl="https://imageinkb.com/photo-name-editor"
+                      badge="Exam & Passport Tool"
+                    />
+                  }
+                />
+                <Route
+                  path="/add-name-and-dob-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Add Name and Date of Birth (DOB) on Photo"
+                      subtitle="Generate official passport photos with Candidate Name and Date of Birth (DOB) printed on white strip."
+                      canonicalUrl="https://imageinkb.com/add-name-and-dob-on-photo"
+                      badge="Exam Forms"
+                    />
+                  }
+                />
+                <Route
+                  path="/dob-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="DOB on Photo Online — Date of Birth Passport Photo Editor"
+                      subtitle="Add DOB (Date of Birth) and Candidate Name at the bottom of passport size photo online."
+                      canonicalUrl="https://imageinkb.com/dob-on-photo"
+                      badge="Exam Forms"
+                    />
+                  }
+                />
+                <Route
+                  path="/name-and-dob-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Name and DOB on Photo for Govt Exam Portals"
+                      subtitle="Online photo editor to add Name and DOB according to SSC, UPSC, IBPS, and State PSC guidelines."
+                      canonicalUrl="https://imageinkb.com/name-and-dob-on-photo"
+                      badge="Exam Forms"
+                    />
+                  }
+                />
+                <Route
+                  path="/ssc-photo-name-date"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="SSC Photo with Name and Date Editor (CGL, CHSL, MTS, GD)"
+                      subtitle="Format passport photos with Candidate Name and Date of Photo (DOP) for SSC online applications."
+                      canonicalUrl="https://imageinkb.com/ssc-photo-name-date"
+                      badge="SSC Exam Special"
+                    />
+                  }
+                />
+                <Route
+                  path="/date-of-birth-on-photo"
+                  element={
+                    <Editor
+                      initialTextMode={true}
+                      title="Date of Birth on Photo Online Editor"
+                      subtitle="Add Date of Birth (DOB) and candidate name to passport photos easily in 1 click."
+                      canonicalUrl="https://imageinkb.com/date-of-birth-on-photo"
+                      badge="Exam Forms"
                     />
                   }
                 />

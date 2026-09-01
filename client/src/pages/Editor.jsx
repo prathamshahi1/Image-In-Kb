@@ -9,7 +9,11 @@ import {
   Calendar,
   User,
   Check,
-  Palette
+  Palette,
+  HelpCircle,
+  ShieldCheck,
+  CheckCircle2,
+  FileCheck2
 } from 'lucide-react';
 import UploadBox from '../components/UploadBox';
 import CropCanvas from '../components/CropCanvas';
@@ -29,7 +33,8 @@ export default function Editor({
   title = 'Crop & Rotate Image',
   subtitle = 'Aspect ratio presets, freeform cropping, candidate name & date stamps, and 90° lossless rotation.',
   canonicalUrl = 'https://imageinkb.com/edit',
-  badge = 'Photo Edit'
+  badge = 'Photo Edit',
+  initialTextMode = false
 }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [serverMetadata, setServerMetadata] = useState(null);
@@ -45,7 +50,7 @@ export default function Editor({
 
   // New Feature: Name & Date on Photo (Passport & Exam Applications)
   const [nameDateConfig, setNameDateConfig] = useState({
-    enabled: false,
+    enabled: initialTextMode,
     name: '',
     date: '',
     style: 'white_strip', // 'white_strip' | 'black_strip' | 'transparent'
@@ -142,7 +147,7 @@ export default function Editor({
     setRotationAngle(0);
     setAspectRatio('free');
     setNameDateConfig({
-      enabled: false,
+      enabled: initialTextMode,
       name: '',
       date: '',
       style: 'white_strip',
@@ -151,7 +156,7 @@ export default function Editor({
   };
 
   return (
-    <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-10 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
+    <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-12 animate-fade-in text-slate-700 dark:text-slate-300 transition-colors duration-200">
       <SeoHead
         title={`${title} — Free Online Tool | Image In Kb`}
         description={subtitle}
@@ -244,7 +249,7 @@ export default function Editor({
                   </div>
                 </div>
 
-                {/* 2. NEW FEATURE: Name & Date on Photo (Passport & Exam Applications) */}
+                {/* 2. Text on Photo / Name & Date on Photo (Passport & Exam Applications) */}
                 <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
@@ -429,6 +434,77 @@ export default function Editor({
             </div>
           </div>
         )}
+      </div>
+
+      {/* SEO & Educational Guide Section */}
+      <div className="space-y-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2.5 shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <FileCheck2 className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+              Name & DOB on Exam Photos
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Official portals like SSC CGL, UPSC, RRB, IBPS, and State PSC require candidate names and Date of Photo (DOP) or Date of Birth (DOB) printed clearly on a white strip.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2.5 shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Type className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+              Text on Image Online Free
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              Add captions, names, dates, or custom banners directly to your photos in seconds with crisp typography and zero quality loss.
+            </p>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 space-y-2.5 shadow-xs">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-slate-900 dark:text-white text-base">
+              100% Private In-Browser
+            </h3>
+            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+              All editing, cropping, and text rendering happens locally in your browser RAM. Your personal passport photos are never uploaded or stored on servers.
+            </p>
+          </div>
+
+        </div>
+
+        {/* FAQs */}
+        <div className="p-6 rounded-3xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-4">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <HelpCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            Frequently Asked Questions
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+            <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
+              <span className="font-bold text-slate-900 dark:text-white block">
+                How to add name and date to a passport size photo?
+              </span>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Upload your passport photo, click "+ Add Text" under Name & Date on Photo, type your full candidate name and date (DOB or DOP), select White Strip style, and click Apply Edits!
+              </p>
+            </div>
+
+            <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-1.5">
+              <span className="font-bold text-slate-900 dark:text-white block">
+                What is the format for SSC / UPSC photo date?
+              </span>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Most exams require candidate name in uppercase on Line 1 (e.g. JOHN DOE) and date on Line 2 (e.g. DOP: 01/09/2026 or DOB: 15/08/2000) over a clean white background.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
