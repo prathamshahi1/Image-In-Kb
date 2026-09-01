@@ -15,6 +15,7 @@ import CompressionControls from '../components/CompressionControls';
 import ComparisonView from '../components/ComparisonView';
 import FaqSection from '../components/FaqSection';
 import SeoContentSection from '../components/SeoContentSection';
+import ContactSection from '../components/ContactSection';
 import SeoHead from '../components/SeoHead';
 import { inspectImageApi, compressImageApi } from '../services/api';
 
@@ -263,6 +264,11 @@ export default function Home() {
         <Link to="/zipimg" className="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-900 dark:text-white font-medium hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors whitespace-nowrap">
           Try ZipImg (ZIP)
         </Link>
+      </div>
+
+      {/* Embedded Contact & Support Section */}
+      <div className="pt-6 border-t border-slate-200 dark:border-slate-800/80">
+        <ContactSection showHeader={true} id="contact" />
       </div>
 
     </div>
