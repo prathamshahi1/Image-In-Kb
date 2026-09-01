@@ -26,7 +26,7 @@ const ASPECT_RATIO_PRESETS = [
 ];
 
 export default function Editor({
-  title = 'Crop & Rotate Edit',
+  title = 'Crop & Rotate Image',
   subtitle = 'Aspect ratio presets, freeform cropping, candidate name & date stamps, and 90° lossless rotation.',
   canonicalUrl = 'https://imageinkb.com/edit',
   badge = 'Photo Edit'
