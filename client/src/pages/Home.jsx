@@ -32,9 +32,9 @@ const QUICK_TOOLS = [
     icon: RefreshCw
   },
   {
-    title: 'Crop & Editor',
-    desc: 'Aspect ratio cropping, 90° rotation, and flips.',
-    path: '/editor',
+    title: 'Crop & Edit Photo',
+    desc: 'Aspect ratio cropping, name & date stamps, and 90° rotation.',
+    path: '/edit',
     icon: Crop
   },
   {

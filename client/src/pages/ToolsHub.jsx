@@ -82,10 +82,10 @@ const ALL_TOOLS = [
     badge: 'Core'
   },
   {
-    id: 'editor',
-    title: 'Crop & Editor',
-    desc: 'Aspect ratio cropping (Free, 1:1, 4:3, 16:9), 90° rotation, and flips.',
-    path: '/editor',
+    id: 'edit',
+    title: 'Crop & Edit Photo',
+    desc: 'Aspect ratio cropping (Free, 1:1, 4:3, 16:9), candidate name & date stamps, and 90° rotation.',
+    path: '/edit',
     icon: Crop,
     badge: 'Creative'
   },

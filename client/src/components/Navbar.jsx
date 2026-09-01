@@ -60,7 +60,7 @@ export default function Navbar() {
     { name: 'Resize', path: '/resize', icon: Scaling },
     { name: 'Convert', path: '/convert', icon: RefreshCw },
     { name: 'Img to PDF', path: '/image-to-pdf', icon: FileText },
-    { name: 'Editor', path: '/editor', icon: Crop },
+    { name: 'Edit', path: '/edit', icon: Crop },
     { name: 'ZipImg', path: '/zipimg', icon: FileArchive },
     { name: 'All Tools', path: '/tools', icon: Wrench }
   ];
