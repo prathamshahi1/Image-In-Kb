@@ -1,5 +1,16 @@
 import React, { useState } from 'react';
-import { Crop as CropIcon, RotateCw, AlertCircle, ArrowRight, Sparkles } from 'lucide-react';
+import {
+  Crop as CropIcon,
+  RotateCw,
+  AlertCircle,
+  ArrowRight,
+  Sparkles,
+  Type,
+  Calendar,
+  User,
+  Check,
+  Palette
+} from 'lucide-react';
 import UploadBox from '../components/UploadBox';
 import CropCanvas from '../components/CropCanvas';
 import ComparisonView from '../components/ComparisonView';
@@ -16,7 +27,7 @@ const ASPECT_RATIO_PRESETS = [
 
 export default function Editor({
   title = 'Crop & Rotate Editor',
-  subtitle = 'Aspect ratio presets, freeform cropping, and 90° lossless rotation in memory.',
+  subtitle = 'Aspect ratio presets, freeform cropping, text on photo, and 90° lossless rotation in memory.',
   canonicalUrl = 'https://imageinkb.com/editor',
   badge = 'Creative Editor'
 }) {
@@ -31,6 +42,15 @@ export default function Editor({
   const [aspectRatio, setAspectRatio] = useState('free');
   const [rotationAngle, setRotationAngle] = useState(0);
   const [cropData, setCropData] = useState(null);
+
+  // New Feature: Name & Date on Photo (Passport & Exam Applications)
+  const [nameDateConfig, setNameDateConfig] = useState({
+    enabled: false,
+    name: '',
+    date: '',
+    style: 'white_strip', // 'white_strip' | 'black_strip' | 'transparent'
+    fontSizeRatio: 'medium' // 'small' | 'medium' | 'large'
+  });
 
   const handleImageSelected = async (clientData) => {
     setSelectedImage(clientData);
@@ -66,14 +86,12 @@ export default function Editor({
       const editConfig = {
         rotation: rotationAngle,
         outputFormat: 'jpeg',
-        quality: 90
+        quality: 92,
+        nameDateConfig: nameDateConfig.enabled ? nameDateConfig : null
       };
 
       if (cropData) {
-        editConfig.cropLeft = cropData.left;
-        editConfig.cropTop = cropData.top;
-        editConfig.cropWidth = cropData.width;
-        editConfig.cropHeight = cropData.height;
+        editConfig.crop = cropData;
       }
 
       const response = await editImageApi(selectedImage.file, editConfig);
@@ -104,6 +122,17 @@ export default function Editor({
     }
   };
 
+  const handleSetTodayDate = (prefix = 'DOP: ') => {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, '0');
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const yyyy = today.getFullYear();
+    setNameDateConfig((prev) => ({
+      ...prev,
+      date: `${prefix}${dd}/${mm}/${yyyy}`
+    }));
+  };
+
   const handleReset = () => {
     setSelectedImage(null);
     setServerMetadata(null);
@@ -112,6 +141,13 @@ export default function Editor({
     setErrorToast(null);
     setRotationAngle(0);
     setAspectRatio('free');
+    setNameDateConfig({
+      enabled: false,
+      name: '',
+      date: '',
+      style: 'white_strip',
+      fontSizeRatio: 'medium'
+    });
   };
 
   return (
@@ -163,11 +199,14 @@ export default function Editor({
           />
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            {/* Left Preview & Crop Canvas */}
             <div className="lg:col-span-7 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex flex-col justify-between space-y-4">
               <CropCanvas
                 imageUrl={selectedImage.previewUrl}
                 aspectRatio={aspectRatio}
                 rotation={rotationAngle}
+                nameDateConfig={nameDateConfig}
                 onCropChange={setCropData}
               />
 
@@ -178,8 +217,11 @@ export default function Editor({
               </div>
             </div>
 
+            {/* Right Editing Controls Panel */}
             <div className="lg:col-span-5 p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-sm space-y-5 flex flex-col justify-between">
               <div className="space-y-4">
+                
+                {/* 1. Crop Aspect Ratio Section */}
                 <div>
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-2">
                     Crop Aspect Ratio
@@ -202,6 +244,151 @@ export default function Editor({
                   </div>
                 </div>
 
+                {/* 2. NEW FEATURE: Name & Date on Photo (Passport & Exam Applications) */}
+                <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Type className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      <label className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        Name & Date on Photo
+                      </label>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setNameDateConfig((prev) => ({ ...prev, enabled: !prev.enabled }))
+                      }
+                      className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-all cursor-pointer flex items-center gap-1.5 ${
+                        nameDateConfig.enabled
+                          ? 'bg-indigo-600 text-white shadow-xs'
+                          : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                      }`}
+                    >
+                      {nameDateConfig.enabled ? (
+                        <>
+                          <Check className="w-3 h-3" />
+                          <span>Enabled</span>
+                        </>
+                      ) : (
+                        <span>+ Add Text</span>
+                      )}
+                    </button>
+                  </div>
+
+                  {nameDateConfig.enabled && (
+                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-indigo-200 dark:border-indigo-500/30 space-y-3 animate-fade-in text-xs">
+                      
+                      {/* Candidate Name Input */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400">
+                          <span className="font-semibold flex items-center gap-1">
+                            <User className="w-3 h-3 text-indigo-500" /> Candidate Name:
+                          </span>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="e.g. PRATHAM KUMAR"
+                          value={nameDateConfig.name}
+                          onChange={(e) =>
+                            setNameDateConfig((prev) => ({ ...prev, name: e.target.value }))
+                          }
+                          className="clean-input text-xs w-full uppercase"
+                        />
+                      </div>
+
+                      {/* Date of Birth / Date of Photo Input */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between text-[11px] text-slate-600 dark:text-slate-400">
+                          <span className="font-semibold flex items-center gap-1">
+                            <Calendar className="w-3 h-3 text-indigo-500" /> Date (DOB / DOP):
+                          </span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => handleSetTodayDate('DOP: ')}
+                              className="px-1.5 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 text-[10px] font-medium hover:underline cursor-pointer"
+                            >
+                              Today (DOP)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setNameDateConfig((prev) => ({
+                                  ...prev,
+                                  date: prev.date ? (prev.date.startsWith('DOB:') ? prev.date : `DOB: ${prev.date}`) : 'DOB: '
+                                }))
+                              }
+                              className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-medium cursor-pointer"
+                            >
+                              DOB
+                            </button>
+                          </div>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="e.g. DOB: 15/08/2000 or DOP: 01/09/2026"
+                          value={nameDateConfig.date}
+                          onChange={(e) =>
+                            setNameDateConfig((prev) => ({ ...prev, date: e.target.value }))
+                          }
+                          className="clean-input text-xs w-full"
+                        />
+                      </div>
+
+                      {/* Strip Background Style */}
+                      <div className="space-y-1">
+                        <span className="text-[11px] font-semibold text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                          <Palette className="w-3 h-3 text-indigo-500" /> Strip Style:
+                        </span>
+                        <div className="grid grid-cols-3 gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNameDateConfig((prev) => ({ ...prev, style: 'white_strip' }))
+                            }
+                            className={`py-1.5 px-2 rounded-lg text-[10px] font-medium border text-center transition-all cursor-pointer ${
+                              nameDateConfig.style === 'white_strip'
+                                ? 'bg-white text-slate-900 border-indigo-600 font-bold shadow-xs'
+                                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                            }`}
+                          >
+                            White Strip (Exam)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNameDateConfig((prev) => ({ ...prev, style: 'black_strip' }))
+                            }
+                            className={`py-1.5 px-2 rounded-lg text-[10px] font-medium border text-center transition-all cursor-pointer ${
+                              nameDateConfig.style === 'black_strip'
+                                ? 'bg-black text-white border-indigo-600 font-bold shadow-xs'
+                                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                            }`}
+                          >
+                            Black Strip
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setNameDateConfig((prev) => ({ ...prev, style: 'transparent' }))
+                            }
+                            className={`py-1.5 px-2 rounded-lg text-[10px] font-medium border text-center transition-all cursor-pointer ${
+                              nameDateConfig.style === 'transparent'
+                                ? 'bg-slate-800 text-white border-indigo-600 font-bold shadow-xs'
+                                : 'bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800'
+                            }`}
+                          >
+                            Overlay
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Orientation Tools Section */}
                 <div className="pt-2 border-t border-slate-200 dark:border-slate-800">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-2">
                     Orientation Tools
@@ -215,27 +402,30 @@ export default function Editor({
                     <span>Rotate 90° Clockwise ({rotationAngle}°)</span>
                   </button>
                 </div>
+
               </div>
 
+              {/* Apply Edits Action Button */}
               <button
                 type="button"
                 onClick={handleApplyEdits}
                 disabled={isProcessing}
-                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md shadow-indigo-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                className="w-full py-3.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-lg shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 hover:scale-[1.01]"
               >
                 {isProcessing ? (
                   <>
                     <div className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin"></div>
-                    <span>Processing Edits...</span>
+                    <span>Applying Edits & Name Strip...</span>
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-4 h-4" />
-                    <span>Apply Crop & Rotation</span>
+                    <span>Apply Edits & Export Photo</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
               </button>
+
             </div>
           </div>
         )}

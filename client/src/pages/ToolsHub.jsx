@@ -10,6 +10,7 @@ import {
   Calculator,
   UserCheck,
   PenTool,
+  Type,
   Search,
   ArrowRight
 } from 'lucide-react';
@@ -23,6 +24,14 @@ const ALL_TOOLS = [
     path: '/compress',
     icon: Target,
     badge: 'Core'
+  },
+  {
+    id: 'name-date-photo',
+    title: 'Name & Date on Photo',
+    desc: 'Add candidate name and date of birth (DOB/DOP) strip for SSC, UPSC, and exam forms.',
+    path: '/name-and-date-on-photo',
+    icon: Type,
+    badge: 'Exam Forms'
   },
   {
     id: 'compress-50kb',

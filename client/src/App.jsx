@@ -364,6 +364,39 @@ export default function App() {
                     />
                   }
                 />
+                <Route
+                  path="/name-and-date-on-photo"
+                  element={
+                    <Editor
+                      title="Add Name and Date on Photo Online Free (DOB / DOP)"
+                      subtitle="Easily add Candidate Name and Date of Birth (DOB) or Date of Photo (DOP) on passport size photo for SSC, UPSC, and government exam forms."
+                      canonicalUrl="https://imageinkb.com/name-and-date-on-photo"
+                      badge="Exam & Passport Tool"
+                    />
+                  }
+                />
+                <Route
+                  path="/add-name-and-date-on-photo"
+                  element={
+                    <Editor
+                      title="Add Name and Date on Photo for SSC & Govt Forms"
+                      subtitle="Add white strip with candidate name and date of birth at the bottom of passport size photo online."
+                      canonicalUrl="https://imageinkb.com/add-name-and-date-on-photo"
+                      badge="Exam & Passport Tool"
+                    />
+                  }
+                />
+                <Route
+                  path="/passport-photo-name-date"
+                  element={
+                    <Editor
+                      title="Passport Photo with Name and Date Editor"
+                      subtitle="Create standard passport photos with customized candidate name and date stamp."
+                      canonicalUrl="https://imageinkb.com/passport-photo-name-date"
+                      badge="Exam & Passport Tool"
+                    />
+                  }
+                />
 
                 {/* 6. ZipImg / Bulk Keywords */}
                 <Route

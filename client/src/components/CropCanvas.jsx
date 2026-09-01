@@ -7,6 +7,7 @@ export default function CropCanvas({
   flipH = false,
   flipV = false,
   aspectRatio = 'free', // 'free' | '1:1' | '4:3' | '16:9'
+  nameDateConfig = null,
   onCropChange
 }) {
   const containerRef = useRef(null);
@@ -26,6 +27,7 @@ export default function CropCanvas({
     if (aspectRatio === '1:1') targetRatio = 1;
     else if (aspectRatio === '4:3') targetRatio = 4 / 3;
     else if (aspectRatio === '16:9') targetRatio = 16 / 9;
+    else if (aspectRatio === '3:2') targetRatio = 3 / 2;
 
     setCrop((prev) => {
       let newHeight = prev.width / targetRatio;
@@ -151,7 +153,7 @@ export default function CropCanvas({
             width: `${crop.width}%`,
             height: `${crop.height}%`
           }}
-          className="absolute border-2 border-cyan-400 bg-cyan-500/10 shadow-2xl shadow-cyan-500/20 cursor-move"
+          className="absolute border-2 border-indigo-400 bg-indigo-500/10 shadow-2xl shadow-indigo-500/20 cursor-move"
           onMouseDown={(e) => handleMouseDown(e, 'move')}
         >
           {/* Rule of thirds grid lines */}
@@ -167,18 +169,42 @@ export default function CropCanvas({
             <div></div>
           </div>
 
+          {/* Live Name & Date Strip Preview on Crop Box */}
+          {nameDateConfig?.enabled && (nameDateConfig?.name?.trim() || nameDateConfig?.date?.trim()) && (
+            <div
+              className={`absolute bottom-0 inset-x-0 py-1 px-2 text-center pointer-events-none shadow-md ${
+                nameDateConfig.style === 'black_strip'
+                  ? 'bg-black text-white border-t border-slate-700'
+                  : nameDateConfig.style === 'transparent'
+                  ? 'bg-black/70 text-white backdrop-blur-xs'
+                  : 'bg-white text-slate-900 border-t border-slate-300'
+              }`}
+            >
+              {nameDateConfig.name?.trim() && (
+                <div className="font-bold uppercase tracking-wider text-[11px] leading-tight truncate">
+                  {nameDateConfig.name}
+                </div>
+              )}
+              {nameDateConfig.date?.trim() && (
+                <div className="font-semibold text-[10px] leading-tight opacity-90 truncate font-mono">
+                  {nameDateConfig.date}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Corner Resize Handles */}
           <div
             onMouseDown={(e) => handleMouseDown(e, 'nw')}
-            className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-white border border-cyan-500 rounded-sm cursor-nw-resize"
+            className="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 bg-white border border-indigo-500 rounded-sm cursor-nw-resize shadow-sm"
           ></div>
           <div
             onMouseDown={(e) => handleMouseDown(e, 'se')}
-            className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-white border border-cyan-500 rounded-sm cursor-se-resize"
+            className="absolute -bottom-1.5 -right-1.5 w-3.5 h-3.5 bg-white border border-indigo-500 rounded-sm cursor-se-resize shadow-sm"
           ></div>
 
           {/* Center Badge */}
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-[10px] font-mono text-cyan-300 pointer-events-none">
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 rounded bg-slate-900/80 border border-slate-700 text-[10px] font-mono text-indigo-300 pointer-events-none">
             {aspectRatio.toUpperCase()}
           </div>
         </div>

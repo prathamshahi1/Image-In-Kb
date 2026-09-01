@@ -432,6 +432,62 @@ export const clientEditImage = async (file, options = {}) => {
     canvas = cropCanvas;
   }
 
+  // Handle Name & Date Strip (Passport / Exam Forms)
+  if (options.nameDateConfig && options.nameDateConfig.enabled) {
+    const {
+      name = '',
+      date = '',
+      style = 'white_strip',
+      fontSizeRatio = 'medium'
+    } = options.nameDateConfig;
+
+    if (name.trim() || date.trim()) {
+      const editCtx = canvas.getContext('2d');
+      const bannerHeightFactor = fontSizeRatio === 'large' ? 0.22 : fontSizeRatio === 'small' ? 0.14 : 0.18;
+      const bannerHeight = Math.max(36, Math.round(canvas.height * bannerHeightFactor));
+      const bannerY = canvas.height - bannerHeight;
+
+      // Draw banner background
+      if (style === 'white_strip') {
+        editCtx.fillStyle = '#FFFFFF';
+        editCtx.fillRect(0, bannerY, canvas.width, bannerHeight);
+        editCtx.strokeStyle = '#CBD5E1';
+        editCtx.lineWidth = Math.max(1, Math.round(canvas.height * 0.003));
+        editCtx.strokeRect(0, bannerY, canvas.width, bannerHeight);
+      } else if (style === 'black_strip') {
+        editCtx.fillStyle = '#000000';
+        editCtx.fillRect(0, bannerY, canvas.width, bannerHeight);
+      } else {
+        editCtx.fillStyle = 'rgba(0, 0, 0, 0.65)';
+        editCtx.fillRect(0, bannerY, canvas.width, bannerHeight);
+      }
+
+      // Render text
+      const textColor = style === 'white_strip' ? '#000000' : '#FFFFFF';
+      editCtx.fillStyle = textColor;
+      editCtx.textAlign = 'center';
+      editCtx.textBaseline = 'middle';
+
+      const lineCount = (name.trim() && date.trim()) ? 2 : 1;
+      const nameSize = Math.max(12, Math.round(bannerHeight * (lineCount === 2 ? 0.36 : 0.55)));
+      const dateSize = Math.max(10, Math.round(bannerHeight * (lineCount === 2 ? 0.30 : 0.50)));
+
+      if (lineCount === 2) {
+        editCtx.font = `bold ${nameSize}px "Inter", -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
+        editCtx.fillText(name.toUpperCase().trim(), canvas.width / 2, bannerY + bannerHeight * 0.32);
+
+        editCtx.font = `600 ${dateSize}px "Inter", -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
+        editCtx.fillText(date.trim(), canvas.width / 2, bannerY + bannerHeight * 0.74);
+      } else if (name.trim()) {
+        editCtx.font = `bold ${nameSize}px "Inter", -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
+        editCtx.fillText(name.toUpperCase().trim(), canvas.width / 2, bannerY + bannerHeight * 0.5);
+      } else if (date.trim()) {
+        editCtx.font = `600 ${dateSize}px "Inter", -apple-system, BlinkMacSystemFont, Arial, sans-serif`;
+        editCtx.fillText(date.trim(), canvas.width / 2, bannerY + bannerHeight * 0.5);
+      }
+    }
+  }
+
   let targetFormat = (options.outputFormat || 'original').toLowerCase();
   if (targetFormat === 'original' || !targetFormat) {
     targetFormat = file.type.split('/')[1] || 'jpeg';
