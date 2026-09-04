@@ -87,6 +87,15 @@ export default function Home() {
     setIsAnalyzing(true);
     setUploadProgress(15);
 
+    // Smart default target KB if original image is smaller than 100KB
+    if (clientData.file && clientData.file.size > 0) {
+      const sizeKb = clientData.file.size / 1024;
+      if (sizeKb < 100) {
+        const smartKb = sizeKb <= 30 ? Math.max(5, Math.round(sizeKb * 0.5)) : 50;
+        setCompressConfig((prev) => ({ ...prev, targetSizeKb: smartKb }));
+      }
+    }
+
     try {
       const response = await inspectImageApi(clientData.file, (progress) => {
         setUploadProgress(progress);

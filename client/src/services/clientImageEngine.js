@@ -78,22 +78,45 @@ export const clientInspectImage = async (file) => {
 };
 
 /**
- * Client-Side Target KB Binary Search Compressor
+ * Checks if a canvas context contains transparent pixels
+ */
+export const hasTransparency = (ctx, width, height) => {
+  try {
+    const imgData = ctx.getImageData(0, 0, Math.min(width, 400), Math.min(height, 400)).data;
+    for (let i = 3; i < imgData.length; i += 16) {
+      if (imgData[i] < 250) return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+};
+
+/**
+ * Pads a blob to reach a specific target byte size if requested
+ */
+export const padBlobToTarget = async (blob, targetBytes) => {
+  if (!blob || blob.size >= targetBytes) return blob;
+  const paddingLength = targetBytes - blob.size;
+  const paddingBuffer = new Uint8Array(paddingLength);
+  return new Blob([blob, paddingBuffer], { type: blob.type });
+};
+
+/**
+ * Client-Side Target KB Binary Search & Adaptive Scaling Compressor
  */
 export const clientCompressImage = async (file, options = {}) => {
   const originalSize = file.size;
   const img = await loadImageElement(file);
 
-  let targetFormat = (options.outputFormat || 'original').toLowerCase();
-  if (targetFormat === 'original' || !targetFormat) {
-    targetFormat = file.type.split('/')[1] || 'jpeg';
-    if (targetFormat === 'jpg') targetFormat = 'jpeg';
-  }
-  const mimeType = `image/${targetFormat === 'jpeg' ? 'jpeg' : targetFormat}`;
+  let userFormat = (options.outputFormat || 'original').toLowerCase();
+  let srcExt = file.name.split('.').pop().toLowerCase() || 'jpeg';
+  if (srcExt === 'jpg') srcExt = 'jpeg';
+  const isSrcPng = file.type === 'image/png' || srcExt === 'png';
 
+  // Base canvas
   let canvas = document.createElement('canvas');
   let ctx = canvas.getContext('2d', { willReadFrequently: true });
-  
   canvas.width = img.naturalWidth;
   canvas.height = img.naturalHeight;
 
@@ -103,22 +126,73 @@ export const clientCompressImage = async (file, options = {}) => {
   }
   ctx.drawImage(img, 0, 0);
 
-  const iterations = [];
-  let bestBlob = null;
-  let finalQuality = 80;
-  let warningMessage = null;
+  // Check if original image has alpha transparency
+  const hasAlpha = isSrcPng ? hasTransparency(ctx, canvas.width, canvas.height) : false;
 
-  // Helper to render canvas to blob
+  // Determine effective format for compression
+  let effectiveFormat = userFormat;
+  if (userFormat === 'original' || !userFormat) {
+    if (isSrcPng) {
+      // For PNG files where user wants target compression:
+      // If image has transparency -> WebP preserves alpha with lossy size compression
+      // If opaque -> JPEG or WebP delivers crisp compression to exact target KB
+      effectiveFormat = hasAlpha ? 'webp' : 'jpeg';
+    } else {
+      effectiveFormat = srcExt === 'webp' ? 'webp' : 'jpeg';
+    }
+  }
+
+  if (effectiveFormat === 'jpg') effectiveFormat = 'jpeg';
+  const mimeType = `image/${effectiveFormat === 'jpeg' ? 'jpeg' : effectiveFormat}`;
+  const isTargetPng = effectiveFormat === 'png';
+
   const renderCanvasToBlob = (cvs, mime, q) => {
     return new Promise((resolve) => {
       cvs.toBlob((b) => resolve(b), mime, q);
     });
   };
 
-  // Case 1: Manual Quality Mode
-  if (options.targetMode === 'manual_quality') {
-    finalQuality = options.manualQuality ? parseInt(options.manualQuality, 10) / 100 : 0.8;
-    bestBlob = await renderCanvasToBlob(canvas, mimeType, finalQuality);
+  const createScaledCanvas = (scale) => {
+    const sCanvas = document.createElement('canvas');
+    sCanvas.width = Math.max(16, Math.round(img.naturalWidth * scale));
+    sCanvas.height = Math.max(16, Math.round(img.naturalHeight * scale));
+    const sCtx = sCanvas.getContext('2d', { willReadFrequently: true });
+    sCtx.imageSmoothingEnabled = true;
+    sCtx.imageSmoothingQuality = 'high';
+    if (options.cleanBackground || (!hasAlpha && (mimeType === 'image/jpeg' || isTargetPng))) {
+      sCtx.fillStyle = '#FFFFFF';
+      sCtx.fillRect(0, 0, sCanvas.width, sCanvas.height);
+    }
+    sCtx.drawImage(img, 0, 0, sCanvas.width, sCanvas.height);
+    return sCanvas;
+  };
+
+  const iterations = [];
+  let bestBlob = null;
+  let finalQuality = 80;
+  let warningMessage = null;
+
+  // Case 1: Manual Quality Mode ('manual_quality' or 'quality')
+  if (options.targetMode === 'manual_quality' || options.targetMode === 'quality') {
+    const qualityPercent = options.manualQuality !== undefined ? parseInt(options.manualQuality, 10) : 80;
+    finalQuality = Math.max(5, Math.min(100, qualityPercent)) / 100;
+
+    if (isTargetPng) {
+      // PNG ignores canvas quality. Scale canvas proportionally to quality slider to reduce size
+      const scale = Math.max(0.2, Math.sqrt(finalQuality));
+      const scaled = createScaledCanvas(scale);
+      bestBlob = await renderCanvasToBlob(scaled, mimeType, 1.0);
+      canvas = scaled;
+    } else {
+      bestBlob = await renderCanvasToBlob(canvas, mimeType, finalQuality);
+      // If quality < 95% and output is larger than original, downscale slightly to guarantee size reduction
+      if (bestBlob.size >= originalSize && finalQuality < 0.95) {
+        const scaled = createScaledCanvas(0.92);
+        bestBlob = await renderCanvasToBlob(scaled, mimeType, finalQuality);
+        canvas = scaled;
+      }
+    }
+
     iterations.push({
       step: 1,
       quality: Math.round(finalQuality * 100),
@@ -127,88 +201,216 @@ export const clientCompressImage = async (file, options = {}) => {
       status: 'Manual Quality applied'
     });
   }
+
   // Case 2: Target Range Compression (e.g. 20KB - 50KB)
   else if (options.targetMode === 'target_range') {
-    const minBytes = Math.max(1, (parseFloat(options.minSizeKb) || 10) * 1024);
+    const minBytes = Math.max(1024, (parseFloat(options.minSizeKb) || 10) * 1024);
     const maxBytes = Math.max(minBytes, (parseFloat(options.maxSizeKb) || 20) * 1024);
 
     let low = 0.05;
     let high = 1.0;
     let stepCount = 0;
 
-    while (low <= high && stepCount < 8) {
-      stepCount++;
-      const currentQ = (low + high) / 2;
-      const testBlob = await renderCanvasToBlob(canvas, mimeType, currentQ);
-      const curSize = testBlob.size;
+    // Phase 1: Try on full resolution
+    if (!isTargetPng) {
+      while (low <= high && stepCount < 8) {
+        stepCount++;
+        const currentQ = (low + high) / 2;
+        const testBlob = await renderCanvasToBlob(canvas, mimeType, currentQ);
+        const curSize = testBlob.size;
 
-      iterations.push({
-        step: stepCount,
-        quality: Math.round(currentQ * 100),
-        sizeBytes: curSize,
-        formattedSize: formatBytes(curSize),
-        status: curSize <= maxBytes && curSize >= minBytes ? 'Within Range ✓' : curSize > maxBytes ? 'Above Max' : 'Below Min'
-      });
+        iterations.push({
+          step: stepCount,
+          quality: Math.round(currentQ * 100),
+          sizeBytes: curSize,
+          formattedSize: formatBytes(curSize),
+          status: curSize <= maxBytes && curSize >= minBytes ? 'Within Range ✓' : curSize > maxBytes ? 'Above Max' : 'Below Min'
+        });
 
-      if (curSize <= maxBytes) {
-        bestBlob = testBlob;
-        finalQuality = Math.round(currentQ * 100);
-        if (curSize >= minBytes) break;
-        low = currentQ + 0.05;
-      } else {
-        high = currentQ - 0.05;
+        if (curSize <= maxBytes) {
+          bestBlob = testBlob;
+          finalQuality = Math.round(currentQ * 100);
+          if (curSize >= minBytes) break;
+          low = currentQ + 0.05;
+        } else {
+          high = currentQ - 0.05;
+        }
+      }
+    }
+
+    // Phase 2: If exceeds maxBytes, adaptively scale resolution
+    if (!bestBlob || bestBlob.size > maxBytes) {
+      const minBlob = await renderCanvasToBlob(canvas, mimeType, isTargetPng ? 1.0 : 0.08);
+      let currentScale = Math.min(0.95, Math.sqrt((maxBytes * 0.90) / Math.max(1, minBlob.size)));
+      currentScale = Math.max(0.08, currentScale);
+
+      let scaleSteps = 0;
+      while (scaleSteps < 6) {
+        scaleSteps++;
+        stepCount++;
+        const sCanvas = createScaledCanvas(currentScale);
+        const q = isTargetPng ? 1.0 : 0.75;
+        const testBlob = await renderCanvasToBlob(sCanvas, mimeType, q);
+        const curSize = testBlob.size;
+
+        iterations.push({
+          step: stepCount,
+          quality: Math.round(q * 100),
+          sizeBytes: curSize,
+          formattedSize: formatBytes(curSize),
+          status: curSize <= maxBytes ? 'Within Range ✓' : 'Above Max'
+        });
+
+        if (curSize <= maxBytes) {
+          bestBlob = testBlob;
+          canvas = sCanvas;
+          finalQuality = Math.round(q * 100);
+          if (curSize >= minBytes || currentScale >= 0.95) break;
+          currentScale = Math.min(1.0, currentScale * 1.15);
+        } else {
+          currentScale = currentScale * Math.max(0.4, Math.min(0.9, Math.sqrt((maxBytes * 0.88) / curSize)));
+        }
       }
     }
 
     if (!bestBlob) {
-      bestBlob = await renderCanvasToBlob(canvas, mimeType, 0.05);
-      finalQuality = 5;
+      const sCanvas = createScaledCanvas(0.4);
+      bestBlob = await renderCanvasToBlob(sCanvas, mimeType, 0.5);
+      canvas = sCanvas;
+      finalQuality = 50;
     }
   }
+
   // Case 3: Target KB Compression (e.g. 50KB, 100KB, 200KB)
   else {
-    const targetBytes = (parseFloat(options.targetSizeKb) || 100) * 1024;
+    let targetBytes = (parseFloat(options.targetSizeKb) || 100) * 1024;
+    
+    // If targetBytes is larger than original file and user did not specify exact target:
+    if (targetBytes >= originalSize && !options.exactTargetSize && !options.padToTarget) {
+      // Target 70% of original size to guarantee compression
+      targetBytes = Math.max(5 * 1024, Math.round(originalSize * 0.70));
+    }
+
     let low = 0.05;
-    let high = 1.0;
+    let high = 0.98;
     let stepCount = 0;
 
-    while (low <= high && stepCount < 8) {
-      stepCount++;
-      const currentQ = (low + high) / 2;
-      const testBlob = await renderCanvasToBlob(canvas, mimeType, currentQ);
-      const curSize = testBlob.size;
-      const isAcceptable = curSize <= targetBytes;
+    // Phase 1: Try full-resolution quality tuning (for JPEG / WebP)
+    if (!isTargetPng) {
+      while (low <= high && stepCount < 8) {
+        stepCount++;
+        const currentQ = (low + high) / 2;
+        const testBlob = await renderCanvasToBlob(canvas, mimeType, currentQ);
+        const curSize = testBlob.size;
+        const isAcceptable = curSize <= targetBytes;
 
-      iterations.push({
-        step: stepCount,
-        quality: Math.round(currentQ * 100),
-        sizeBytes: curSize,
-        formattedSize: formatBytes(curSize),
-        status: isAcceptable ? 'Under Target ✓' : 'Over Target ✕'
-      });
+        iterations.push({
+          step: stepCount,
+          quality: Math.round(currentQ * 100),
+          sizeBytes: curSize,
+          formattedSize: formatBytes(curSize),
+          status: isAcceptable ? 'Under Target ✓' : 'Over Target ✕'
+        });
 
-      if (isAcceptable) {
-        bestBlob = testBlob;
-        finalQuality = Math.round(currentQ * 100);
-        if (curSize >= targetBytes * 0.94) break;
-        low = currentQ + 0.05;
-      } else {
-        high = currentQ - 0.05;
+        if (isAcceptable) {
+          bestBlob = testBlob;
+          finalQuality = Math.round(currentQ * 100);
+          if (curSize >= targetBytes * 0.92) break; // Perfect fit
+          low = currentQ + 0.05;
+        } else {
+          high = currentQ - 0.05;
+        }
       }
     }
 
-    // If still exceeds target at minimum quality, scale dimensions slightly to guarantee target
+    // Phase 2: If full resolution cannot reach target (or format is PNG), use Adaptive Dimension Scaling
     if (!bestBlob || bestBlob.size > targetBytes) {
-      let scale = 0.85;
-      let scaledCanvas = document.createElement('canvas');
-      let scaledCtx = scaledCanvas.getContext('2d');
-      scaledCanvas.width = Math.round(img.naturalWidth * scale);
-      scaledCanvas.height = Math.round(img.naturalHeight * scale);
-      scaledCtx.drawImage(img, 0, 0, scaledCanvas.width, scaledCanvas.height);
+      // Test size at lowest quality or current state to compute initial scale
+      const baselineBlob = await renderCanvasToBlob(canvas, mimeType, isTargetPng ? 1.0 : 0.08);
+      const baselineSize = baselineBlob.size;
 
-      bestBlob = await renderCanvasToBlob(scaledCanvas, mimeType, 0.7);
-      finalQuality = 70;
-      canvas = scaledCanvas;
+      let currentScale = Math.min(0.95, Math.sqrt((targetBytes * 0.92) / Math.max(1, baselineSize)));
+      currentScale = Math.max(0.08, currentScale);
+
+      let scaleStep = 0;
+      while (scaleStep < 7) {
+        scaleStep++;
+        stepCount++;
+
+        const sCanvas = createScaledCanvas(currentScale);
+        let testBlob;
+        let testQuality = 80;
+
+        if (isTargetPng) {
+          testBlob = await renderCanvasToBlob(sCanvas, 'image/png');
+          testQuality = 100;
+        } else {
+          testQuality = 78;
+          testBlob = await renderCanvasToBlob(sCanvas, mimeType, 0.78);
+          if (testBlob.size > targetBytes) {
+            testQuality = 50;
+            testBlob = await renderCanvasToBlob(sCanvas, mimeType, 0.50);
+          }
+          if (testBlob.size > targetBytes) {
+            testQuality = 25;
+            testBlob = await renderCanvasToBlob(sCanvas, mimeType, 0.25);
+          }
+        }
+
+        const curSize = testBlob.size;
+        const isAcceptable = curSize <= targetBytes;
+
+        iterations.push({
+          step: stepCount,
+          quality: testQuality,
+          sizeBytes: curSize,
+          formattedSize: formatBytes(curSize),
+          status: isAcceptable ? 'Under Target ✓' : 'Over Target ✕'
+        });
+
+        if (isAcceptable) {
+          bestBlob = testBlob;
+          canvas = sCanvas;
+          finalQuality = testQuality;
+          if (curSize >= targetBytes * 0.88) break; // Close to target
+          if (curSize < targetBytes * 0.60 && currentScale < 0.90) {
+            currentScale = Math.min(1.0, currentScale * 1.20);
+          } else {
+            break;
+          }
+        } else {
+          // Still over target -> scale down proportionally
+          const scaleReduction = Math.max(0.35, Math.min(0.88, Math.sqrt((targetBytes * 0.90) / curSize)));
+          currentScale = currentScale * scaleReduction;
+        }
+      }
+    }
+
+    // Phase 3: Absolute safety fallback to strictly enforce target size
+    if (!bestBlob || bestBlob.size > targetBytes) {
+      let emergencyScale = 0.5;
+      while (emergencyScale >= 0.05) {
+        const sCanvas = createScaledCanvas(emergencyScale);
+        const b = await renderCanvasToBlob(sCanvas, mimeType, isTargetPng ? 1.0 : 0.60);
+        if (b && b.size <= targetBytes) {
+          bestBlob = b;
+          canvas = sCanvas;
+          finalQuality = 60;
+          break;
+        }
+        emergencyScale -= 0.1;
+      }
+      if (!bestBlob) {
+        const sCanvas = createScaledCanvas(0.1);
+        bestBlob = await renderCanvasToBlob(sCanvas, mimeType, 0.40);
+        canvas = sCanvas;
+        finalQuality = 40;
+      }
+    }
+
+    // Optional: Exact target size padding if requested
+    if ((options.padToTarget || options.exactTargetSize) && bestBlob.size < targetBytes) {
+      bestBlob = await padBlobToTarget(bestBlob, targetBytes);
     }
   }
 
@@ -217,7 +419,7 @@ export const clientCompressImage = async (file, options = {}) => {
   const savingsPercent = calculateSavingsPercentage(originalSize, finalSize);
 
   const baseName = file.name.replace(/\.[^/.]+$/, '');
-  const outExt = targetFormat === 'jpeg' ? 'jpg' : targetFormat;
+  const outExt = effectiveFormat === 'jpeg' ? 'jpg' : effectiveFormat;
   const outputFilename = `${baseName}-optimized.${outExt}`;
 
   return {
@@ -238,7 +440,7 @@ export const clientCompressImage = async (file, options = {}) => {
         formattedSize: formatBytes(finalSize),
         width: canvas.width,
         height: canvas.height,
-        format: targetFormat.toUpperCase(),
+        format: effectiveFormat.toUpperCase(),
         mimeType,
         qualityUsed: finalQuality,
         savingsPercent,

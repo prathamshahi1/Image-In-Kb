@@ -194,7 +194,7 @@ export const compressImageService = async (inputBuffer, options = {}) => {
   let warningMessage = null;
 
   // Case 1: Manual Quality Mode
-  if (options.targetMode === 'manual_quality') {
+  if (options.targetMode === 'manual_quality' || options.targetMode === 'quality') {
     finalQuality = options.manualQuality ? parseInt(options.manualQuality, 10) : 80;
     const result = await renderWithQuality(inputBuffer, format, finalQuality, cleanBackground);
     finalBuffer = result.buffer;
@@ -248,10 +248,12 @@ export const compressImageService = async (inputBuffer, options = {}) => {
       finalBuffer = bestResult.buffer;
       finalQuality = bestResult.quality;
     } else {
-      const fallback = await renderWithQuality(inputBuffer, format, 5, cleanBackground);
+      // Scale down dimensions to fit within range
+      let scale = 0.8;
+      let scaledBuffer = await sharp(inputBuffer).resize(Math.round(initialMetadata.width * scale)).toBuffer();
+      const fallback = await renderWithQuality(scaledBuffer, format, 70, cleanBackground);
       finalBuffer = fallback.buffer;
-      finalQuality = 5;
-      warningMessage = `Image could not be compressed under ${formatBytes(maxBytes)} without reducing dimensions. Minimum quality reached.`;
+      finalQuality = 70;
     }
 
     // If final buffer is smaller than minBytes, pad it into the safe middle of the range!
@@ -308,10 +310,12 @@ export const compressImageService = async (inputBuffer, options = {}) => {
       finalBuffer = bestResult.buffer;
       finalQuality = bestResult.quality;
     } else {
-      const fallback = await renderWithQuality(inputBuffer, format, 5, cleanBackground);
+      // Scale down dimensions to fit within target KB
+      const fallbackScale = Math.min(0.85, Math.sqrt((targetBytes * 0.9) / Math.max(1, originalSize)));
+      const scaledBuffer = await sharp(inputBuffer).resize(Math.max(50, Math.round(initialMetadata.width * fallbackScale))).toBuffer();
+      const fallback = await renderWithQuality(scaledBuffer, format, 70, cleanBackground);
       finalBuffer = fallback.buffer;
-      finalQuality = 5;
-      warningMessage = `Target size of ${formatBytes(targetBytes)} is very small for this image resolution.`;
+      finalQuality = 70;
     }
 
     // If user requested target size padding OR if buffer is smaller than target and padToTarget is set:
