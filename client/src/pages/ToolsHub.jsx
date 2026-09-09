@@ -91,12 +91,12 @@ const ALL_TOOLS = [
     badge: 'Creative'
   },
   {
-    id: 'pdf-to-image',
-    title: 'PDF to Image (JPG/PNG)',
-    desc: 'Extract multi-page PDF documents into crystal clear JPG, PNG, or WebP images with single-click ZIP archive downloads.',
-    path: '/pdf-to-image',
-    icon: ImageIcon,
-    badge: 'PDF Extractor'
+    id: 'zipimg',
+    title: 'ZipImg (ZIP Archive)',
+    desc: 'Process up to 20 images concurrently and download as a ZIP archive.',
+    path: '/zipimg',
+    icon: Layers,
+    badge: 'Bulk ZIP'
   },
   {
     id: 'image-to-pdf',
@@ -107,12 +107,12 @@ const ALL_TOOLS = [
     badge: 'PDF Document'
   },
   {
-    id: 'zipimg',
-    title: 'ZipImg (ZIP Archive)',
-    desc: 'Process up to 20 images concurrently and download as a ZIP archive.',
-    path: '/zipimg',
-    icon: Layers,
-    badge: 'Bulk ZIP'
+    id: 'pdf-to-image',
+    title: 'PDF to Image (JPG/PNG)',
+    desc: 'Extract multi-page PDF documents into crystal clear JPG, PNG, or WebP images with single-click ZIP archive downloads.',
+    path: '/pdf-to-image',
+    icon: ImageIcon,
+    badge: 'PDF Extractor'
   },
   {
     id: 'calculator',

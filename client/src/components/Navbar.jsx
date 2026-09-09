@@ -60,10 +60,10 @@ export default function Navbar() {
     { name: 'Compress', path: '/compress', icon: Target },
     { name: 'Resize', path: '/resize', icon: Scaling },
     { name: 'Convert', path: '/convert', icon: RefreshCw },
-    { name: 'PDF to Img', path: '/pdf-to-image', icon: ImageIcon },
-    { name: 'Img to PDF', path: '/image-to-pdf', icon: FileText },
     { name: 'Edit', path: '/edit', icon: Crop },
     { name: 'ZipImg', path: '/zipimg', icon: FileArchive },
+    { name: 'Img to PDF', path: '/image-to-pdf', icon: FileText },
+    { name: 'PDF to Img', path: '/pdf-to-image', icon: ImageIcon },
     { name: 'All Tools', path: '/tools', icon: Wrench }
   ];
 

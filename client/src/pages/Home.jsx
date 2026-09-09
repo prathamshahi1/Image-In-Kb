@@ -34,16 +34,16 @@ const QUICK_TOOLS = [
     icon: RefreshCw
   },
   {
-    title: 'PDF to Image',
-    desc: 'Extract multi-page PDF documents into JPG or PNG.',
-    path: '/pdf-to-image',
-    icon: ImageIcon
-  },
-  {
     title: 'Crop & Edit Photo',
     desc: 'Aspect ratio cropping, name & date stamps, and 90° rotation.',
     path: '/edit',
     icon: Crop
+  },
+  {
+    title: 'ZipImg Compressor',
+    desc: 'Process up to 20 images concurrently in a single ZIP.',
+    path: '/zipimg',
+    icon: Layers
   },
   {
     title: 'Image to PDF',
@@ -52,10 +52,10 @@ const QUICK_TOOLS = [
     icon: FileText
   },
   {
-    title: 'ZipImg Compressor',
-    desc: 'Process up to 20 images concurrently in a single ZIP.',
-    path: '/zipimg',
-    icon: Layers
+    title: 'PDF to Image',
+    desc: 'Extract multi-page PDF documents into JPG or PNG.',
+    path: '/pdf-to-image',
+    icon: ImageIcon
   }
 ];
 
