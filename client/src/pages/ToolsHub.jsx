@@ -7,6 +7,7 @@ import {
   Crop,
   Layers,
   FileText,
+  Image as ImageIcon,
   Calculator,
   UserCheck,
   PenTool,
@@ -88,6 +89,14 @@ const ALL_TOOLS = [
     path: '/edit',
     icon: Crop,
     badge: 'Creative'
+  },
+  {
+    id: 'pdf-to-image',
+    title: 'PDF to Image (JPG/PNG)',
+    desc: 'Extract multi-page PDF documents into crystal clear JPG, PNG, or WebP images with single-click ZIP archive downloads.',
+    path: '/pdf-to-image',
+    icon: ImageIcon,
+    badge: 'PDF Extractor'
   },
   {
     id: 'image-to-pdf',

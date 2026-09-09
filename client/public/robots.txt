@@ -4,8 +4,12 @@ Allow: /
 Allow: /compress
 Allow: /resize
 Allow: /convert
+Allow: /edit
 Allow: /editor
+Allow: /pdf-to-image
+Allow: /image-to-pdf
 Allow: /batch
+Allow: /zipimg
 Allow: /tools
 Allow: /compress-image-to-50kb
 Allow: /compress-image-to-100kb

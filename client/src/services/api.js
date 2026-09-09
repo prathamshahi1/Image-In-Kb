@@ -397,3 +397,12 @@ export const processBatchApi = async (files, options = {}, onProgress) => {
 
 // Export alias to prevent naming confusion
 export const batchProcessApi = processBatchApi;
+
+/* =========================================================================
+   PDF TO IMAGE API
+   ========================================================================= */
+export {
+  inspectPdfDocument as inspectPdfApi,
+  generatePdfThumbnails as generatePdfThumbnailsApi,
+  convertPdfToImages as convertPdfToImagesApi
+} from './pdfToImageEngine';

@@ -11,6 +11,7 @@ import Converter from './pages/Converter';
 import Editor from './pages/Editor';
 import Batch from './pages/Batch';
 import ImageToPdf from './pages/ImageToPdf';
+import PdfToImage from './pages/PdfToImage';
 import Calculator from './pages/Calculator';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
@@ -45,6 +46,10 @@ export default function App() {
                 <Route path="/batch" element={<Batch />} />
                 <Route path="/image-to-pdf" element={<ImageToPdf />} />
                 <Route path="/img-to-pdf" element={<ImageToPdf />} />
+                <Route path="/pdf-to-image" element={<PdfToImage />} />
+                <Route path="/pdf-to-jpg" element={<PdfToImage />} />
+                <Route path="/pdf-to-png" element={<PdfToImage />} />
+                <Route path="/pdf-to-img" element={<PdfToImage />} />
                 <Route path="/calculator" element={<Calculator />} />
 
                 {/* Tools Directory */}

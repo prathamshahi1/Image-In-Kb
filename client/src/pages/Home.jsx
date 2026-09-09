@@ -6,6 +6,7 @@ import {
   Crop,
   Layers,
   FileText,
+  Image as ImageIcon,
   ShieldCheck,
   Zap,
   ArrowRight
@@ -31,6 +32,12 @@ const QUICK_TOOLS = [
     desc: 'Convert seamlessly between JPG, PNG, and WebP.',
     path: '/convert',
     icon: RefreshCw
+  },
+  {
+    title: 'PDF to Image',
+    desc: 'Extract multi-page PDF documents into JPG or PNG.',
+    path: '/pdf-to-image',
+    icon: ImageIcon
   },
   {
     title: 'Crop & Edit Photo',
