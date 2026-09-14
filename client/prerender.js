@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { GUIDES } from './src/data/guidesData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -16,7 +17,7 @@ if (!fs.existsSync(TEMPLATE_PATH)) {
 const baseTemplate = fs.readFileSync(TEMPLATE_PATH, 'utf-8');
 
 /**
- * Full Registry of All 60+ Routes with Target Keywords, Titles, Descriptions, and Initial Pre-Rendered HTML
+ * Full Registry of All 48+ Routes with Target Keywords, Titles, Descriptions, and Initial Pre-Rendered HTML
  */
 const ROUTES = [
   // 1. Core Suite
@@ -303,35 +304,40 @@ const ROUTES = [
     title: 'SSC Photo & Signature Upload Guidelines 2026: Size & Rules | Image In Kb',
     description: 'Official guidelines for SSC CGL, CHSL, and MTS on photo dimensions (20-50KB), signature specs (10-20KB), and Name/Date stamp requirements.',
     h1: 'SSC Photo & Signature Upload Guidelines 2026',
-    subtitle: 'Size, 20KB-50KB Limits & Name/Date Rules for SSC CGL, CHSL, MTS, and GD Forms.'
+    subtitle: 'Size, 20KB-50KB Limits & Name/Date Rules for SSC CGL, CHSL, MTS, and GD Forms.',
+    guideSlug: 'ssc-photo-and-signature-upload-guide'
   },
   {
     path: '/guides/how-to-compress-image-to-20kb-or-50kb',
     title: 'How to Compress Images to Exact 20KB or 50KB | Image In Kb',
     description: 'Step-by-step tutorial on reducing JPG, PNG, and WebP file sizes to exact 20 KB or 50 KB limits without losing quality.',
     h1: 'How to Compress Images to Exact 20KB or 50KB',
-    subtitle: 'Step-by-step tutorial on reducing JPG and PNG file sizes to exact KB limits for official exam portals.'
+    subtitle: 'Step-by-step tutorial on reducing JPG and PNG file sizes to exact KB limits for official exam portals.',
+    guideSlug: 'how-to-compress-image-to-20kb-or-50kb'
   },
   {
     path: '/guides/passport-size-photo-requirements-guide',
     title: 'Passport Photo Size Requirements by Country (India, US, Schengen) | Image In Kb',
     description: 'Detailed comparison of passport photo dimensions, pixel sizes, aspect ratios, and KB limits for India, US Visa, and Schengen.',
     h1: 'Passport Photo Size Requirements by Country',
-    subtitle: 'Official dimension, pixel, and file size matrix for India, US Visa, Schengen, and UK passports.'
+    subtitle: 'Official dimension, pixel, and file size matrix for India, US Visa, Schengen, and UK passports.',
+    guideSlug: 'passport-size-photo-requirements-guide'
   },
   {
     path: '/guides/how-to-convert-pdf-to-jpg-high-resolution',
     title: 'How to Convert Multi-Page PDF to High-Resolution JPG / PNG | Image In Kb',
     description: 'Learn how to extract individual pages or entire multi-page PDF documents into crisp 150 DPI, 200 DPI, or 300 DPI JPG and PNG images.',
     h1: 'How to Convert Multi-Page PDF to High-Resolution JPG / PNG',
-    subtitle: 'DPI settings, single-page vs. ZIP downloads, and lossless PDF extraction guide.'
+    subtitle: 'DPI settings, single-page vs. ZIP downloads, and lossless PDF extraction guide.',
+    guideSlug: 'how-to-convert-pdf-to-jpg-high-resolution'
   },
   {
     path: '/guides/add-name-and-date-of-birth-on-photo-online',
     title: 'How to Add Name and Date on Passport Size Photo for Govt Exams | Image In Kb',
     description: 'Tutorial on adding candidate name and date of birth (DOB) or date of photo (DOP) on passport photos for SSC and UPSC forms.',
     h1: 'How to Add Name and Date on Passport Size Photo',
-    subtitle: 'Step-by-step tutorial for SSC, UPSC, and State PSC application form photo formatting.'
+    subtitle: 'Step-by-step tutorial for SSC, UPSC, and State PSC application form photo formatting.',
+    guideSlug: 'add-name-and-date-of-birth-on-photo-online'
   },
 
   // 8. Legal & Utilities
@@ -372,6 +378,21 @@ const ROUTES = [
   }
 ];
 
+function markdownToHtml(md) {
+  if (!md) return '';
+  return md
+    .replace(/^### (.*$)/gim, '<h3 style="font-size:1.1rem;font-weight:700;color:#0f172a;margin-top:20px;margin-bottom:8px;">$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2 style="font-size:1.35rem;font-weight:800;color:#0f172a;margin-top:24px;margin-bottom:12px;">$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1 style="font-size:1.75rem;font-weight:900;color:#0f172a;margin-bottom:16px;">$1</h1>')
+    .replace(/^\> (.*$)/gim, '<blockquote style="background:#eef2ff;border-left:4px solid #4f46e5;padding:12px 16px;margin:16px 0;border-radius:6px;color:#3730a3;font-size:0.9rem;">$1</blockquote>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" style="color:#4f46e5;font-weight:600;text-decoration:underline;">$1</a>')
+    .replace(/^\s*-\s+(.*$)/gim, '<li style="margin-bottom:6px;color:#334155;">$1</li>')
+    .replace(/^\s*\d+\.\s+(.*$)/gim, '<li style="margin-bottom:6px;color:#334155;">$1</li>')
+    .replace(/\n\n/g, '<p style="margin-bottom:14px;color:#334155;line-height:1.7;font-size:0.95rem;"></p>');
+}
+
 /**
  * Pre-Render HTML Generator
  */
@@ -392,16 +413,16 @@ for (const route of ROUTES) {
   // Structured Data Schema
   const schema = {
     '@context': 'https://schema.org',
-    '@type': 'WebApplication',
+    '@type': route.guideSlug ? 'Article' : 'WebApplication',
     name: route.title.split('—')[0].trim(),
+    headline: route.h1,
     url: canonicalUrl,
-    applicationCategory: 'MultimediaApplication',
-    operatingSystem: 'All',
     description: route.description,
-    offers: {
-      '@type': 'Offer',
-      price: '0',
-      priceCurrency: 'USD'
+    inLanguage: 'en-US',
+    publisher: {
+      '@type': 'Organization',
+      name: 'Image In Kb',
+      url: 'https://imageinkb.com'
     }
   };
 
@@ -431,7 +452,7 @@ for (const route of ROUTES) {
   <meta property="og:title" content="${route.title}" />
   <meta property="og:description" content="${route.description}" />
   <meta property="og:url" content="${canonicalUrl}" />
-  <meta property="og:type" content="website" />
+  <meta property="og:type" content="${route.guideSlug ? 'article' : 'website'}" />
   <meta property="og:site_name" content="Image In Kb" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${route.title}" />
@@ -440,67 +461,165 @@ for (const route of ROUTES) {
   `;
   html = html.replace('</head>', `${ogTags}\n</head>`);
 
-  // Inject Rich Static SEO Prerender Content inside <div id="root">
-  const staticRootContent = `
-    <header style="padding:24px 20px;text-align:center;max-width:900px;margin:0 auto;">
-      <nav style="margin-bottom:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:13px;">
-        <a href="https://imageinkb.com/" style="font-weight:bold;color:#4f46e5;text-decoration:none;">Image In Kb</a>
-        <a href="https://imageinkb.com/compress" style="text-decoration:none;color:#334155;">Compress</a>
-        <a href="https://imageinkb.com/resize" style="text-decoration:none;color:#334155;">Resize</a>
-        <a href="https://imageinkb.com/convert" style="text-decoration:none;color:#334155;">Convert</a>
-        <a href="https://imageinkb.com/edit" style="text-decoration:none;color:#334155;">Edit</a>
-        <a href="https://imageinkb.com/zipimg" style="text-decoration:none;color:#334155;">ZipImg</a>
-        <a href="https://imageinkb.com/image-to-pdf" style="text-decoration:none;color:#334155;">Img to PDF</a>
-        <a href="https://imageinkb.com/pdf-to-image" style="text-decoration:none;color:#334155;">PDF to Img</a>
-        <a href="https://imageinkb.com/guides" style="text-decoration:none;color:#334155;">Guides</a>
-      </nav>
-      <h1 style="font-size:2rem;font-weight:900;color:#0f172a;margin-bottom:8px;line-height:1.2;">${route.h1}</h1>
-      <p style="font-size:1.05rem;color:#475569;margin-bottom:12px;">${route.subtitle}</p>
-      <p style="font-size:0.9rem;color:#64748b;max-width:700px;margin:0 auto 20px;line-height:1.5;">${route.description}</p>
-    </header>
-    <main style="max-width:900px;margin:0 auto;padding:0 20px 40px;font-family:system-ui,-apple-system,sans-serif;">
-      <section style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
-        <h2 style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:12px;">Fast, In-Memory Image Optimization & PDF Engine</h2>
-        <p style="font-size:0.9rem;color:#334155;line-height:1.6;margin-bottom:16px;">
-          Image In Kb provides browser-based, private image compression, resizing, format conversion, and cropping with zero server uploads and 100% data confidentiality.
-        </p>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px;">
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
-            <h3 style="font-size:0.9rem;font-weight:700;color:#0f172a;margin-bottom:4px;">🔒 100% Private In-Browser Engine</h3>
-            <p style="font-size:0.8rem;color:#64748b;margin:0;line-height:1.4;">Photos and signatures never leave your device. Everything processes in temporary RAM buffers.</p>
-          </div>
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
-            <h3 style="font-size:0.9rem;font-weight:700;color:#0f172a;margin-bottom:4px;">🎯 Exact Target KB Tuning</h3>
-            <p style="font-size:0.8rem;color:#64748b;margin:0;line-height:1.4;">Binary search quality algorithms ensure your files match exact 20KB, 50KB, or 100KB portal limits.</p>
-          </div>
-          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
-            <h3 style="font-size:0.9rem;font-weight:700;color:#0f172a;margin-bottom:4px;">📄 PDF to Image & Img to PDF</h3>
-            <p style="font-size:0.8rem;color:#64748b;margin:0;line-height:1.4;">Extract multi-page PDF documents to high-resolution JPG/PNG images or create printable PDFs.</p>
-          </div>
-        </div>
-      </section>
+  let bodyContent = '';
 
-      <section style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
-        <h2 style="font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:12px;">Popular Online Optimization Tools</h2>
-        <ul style="font-size:0.85rem;color:#334155;line-height:1.8;padding-left:20px;">
-          <li><a href="https://imageinkb.com/compress" style="color:#4f46e5;font-weight:600;text-decoration:none;">Target Size Compressor</a> — Compress images to exact KB limits (50KB, 100KB, 200KB)</li>
-          <li><a href="https://imageinkb.com/compress-image-to-50kb" style="color:#4f46e5;font-weight:600;text-decoration:none;">Compress Image to 50KB</a> — The standard 50KB preset for online exam and job forms</li>
-          <li><a href="https://imageinkb.com/compress-image-to-20kb" style="color:#4f46e5;font-weight:600;text-decoration:none;">Compress Image to 20KB</a> — Strict 20KB preset for signatures and banking portals</li>
-          <li><a href="https://imageinkb.com/signature-compressor" style="color:#4f46e5;font-weight:600;text-decoration:none;">Signature Compressor</a> — Compress signatures under 10KB, 20KB with paper whitening</li>
-          <li><a href="https://imageinkb.com/passport-photo" style="color:#4f46e5;font-weight:600;text-decoration:none;">Passport Photo Resizer</a> — US 2x2", Schengen 35x45mm, and exam dimensions</li>
-          <li><a href="https://imageinkb.com/pdf-to-image" style="color:#4f46e5;font-weight:600;text-decoration:none;">PDF to Image Converter</a> — Extract PDF pages to 150-300 DPI JPG, PNG, and ZIP</li>
-          <li><a href="https://imageinkb.com/image-to-pdf" style="color:#4f46e5;font-weight:600;text-decoration:none;">Image to PDF Converter</a> — Combine multiple images into printable PDF documents</li>
-          <li><a href="https://imageinkb.com/edit" style="color:#4f46e5;font-weight:600;text-decoration:none;">Crop & Rotate Image</a> — Aspect ratio cropping, Name & DOB stamps on photos</li>
-          <li><a href="https://imageinkb.com/guides" style="color:#4f46e5;font-weight:600;text-decoration:none;">Guides & Tutorials</a> — Step-by-step upload guidelines for SSC, UPSC, and passport photos</li>
-        </ul>
-      </section>
-    </main>
+  if (route.guideSlug) {
+    const guide = GUIDES.find(g => g.slug === route.guideSlug);
+    if (guide) {
+      bodyContent = `
+        <article style="max-width:850px;margin:0 auto;padding:24px 20px 60px;font-family:system-ui,-apple-system,sans-serif;">
+          <nav style="margin-bottom:16px;font-size:13px;color:#64748b;">
+            <a href="https://imageinkb.com/" style="color:#4f46e5;text-decoration:none;">Home</a> &gt; 
+            <a href="https://imageinkb.com/guides" style="color:#4f46e5;text-decoration:none;">Guides</a> &gt; 
+            <span>${guide.category}</span>
+          </nav>
+          <header style="margin-bottom:28px;border-bottom:1px solid #e2e8f0;padding-bottom:20px;">
+            <span style="display:inline-block;background:#eef2ff;color:#4f46e5;font-weight:700;font-size:12px;padding:4px 10px;border-radius:20px;margin-bottom:10px;">${guide.category} • ${guide.readTime}</span>
+            <h1 style="font-size:2.2rem;font-weight:900;color:#0f172a;line-height:1.2;margin:8px 0 12px;">${guide.title}</h1>
+            <p style="font-size:1.1rem;color:#475569;line-height:1.6;margin-bottom:12px;">${guide.excerpt}</p>
+            <div style="font-size:13px;color:#94a3b8;">Published: ${guide.publishedAt} | Updated: ${guide.updatedAt} | Author: ${guide.author}</div>
+          </header>
+          
+          <div style="margin-bottom:30px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div>
+              <strong style="color:#0f172a;font-size:0.95rem;">Ready to optimize your photo/signature?</strong>
+              <p style="margin:2px 0 0;font-size:0.85rem;color:#64748b;">Fast, private, and 100% in-browser optimization engine.</p>
+            </div>
+            <a href="https://imageinkb.com${guide.relatedToolPath}" style="display:inline-block;background:#4f46e5;color:#ffffff;font-weight:bold;text-decoration:none;padding:10px 18px;border-radius:8px;font-size:0.9rem;">${guide.relatedToolLabel} &rarr;</a>
+          </div>
+
+          <div class="prose" style="line-height:1.8;color:#334155;font-size:1rem;">
+            ${markdownToHtml(guide.content)}
+          </div>
+
+          <div style="margin-top:40px;padding-top:20px;border-top:1px solid #e2e8f0;display:flex;flex-wrap:wrap;gap:8px;">
+            <strong style="width:100%;font-size:0.85rem;color:#64748b;margin-bottom:4px;">Topics:</strong>
+            ${guide.tags.map(t => `<span style="background:#f1f5f9;color:#475569;font-size:12px;padding:4px 10px;border-radius:6px;">#${t}</span>`).join(' ')}
+          </div>
+        </article>
+      `;
+    }
+  } else if (route.path === '/guides') {
+    bodyContent = `
+      <main style="max-width:950px;margin:0 auto;padding:24px 20px 60px;font-family:system-ui,-apple-system,sans-serif;">
+        <header style="text-align:center;margin-bottom:36px;">
+          <h1 style="font-size:2.2rem;font-weight:900;color:#0f172a;margin-bottom:8px;">Guides, Tutorials & Exam Specs</h1>
+          <p style="font-size:1.1rem;color:#64748b;max-width:700px;margin:0 auto;">Master photo sizing, government job portal specs, 20KB/50KB target compression, and DPI settings.</p>
+        </header>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:20px;">
+          ${GUIDES.map(g => `
+            <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 2px 4px rgba(0,0,0,0.02);">
+              <div>
+                <span style="display:inline-block;background:#eef2ff;color:#4f46e5;font-weight:700;font-size:11px;padding:3px 8px;border-radius:12px;margin-bottom:8px;">${g.category}</span>
+                <h2 style="font-size:1.15rem;font-weight:700;color:#0f172a;line-height:1.4;margin:4px 0 8px;">
+                  <a href="https://imageinkb.com/guides/${g.slug}" style="color:#0f172a;text-decoration:none;">${g.title}</a>
+                </h2>
+                <p style="font-size:0.85rem;color:#64748b;line-height:1.5;margin-bottom:16px;">${g.excerpt}</p>
+              </div>
+              <a href="https://imageinkb.com/guides/${g.slug}" style="color:#4f46e5;font-weight:700;font-size:0.85rem;text-decoration:none;">Read Full Guide &rarr;</a>
+            </div>
+          `).join('')}
+        </div>
+      </main>
+    `;
+  } else {
+    // Default Tools & Home Pre-Render layout
+    bodyContent = `
+      <header style="padding:24px 20px;text-align:center;max-width:900px;margin:0 auto;font-family:system-ui,-apple-system,sans-serif;">
+        <nav style="margin-bottom:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:13px;">
+          <a href="https://imageinkb.com/" style="font-weight:bold;color:#4f46e5;text-decoration:none;">Image In Kb</a>
+          <a href="https://imageinkb.com/compress" style="text-decoration:none;color:#334155;">Compress</a>
+          <a href="https://imageinkb.com/resize" style="text-decoration:none;color:#334155;">Resize</a>
+          <a href="https://imageinkb.com/convert" style="text-decoration:none;color:#334155;">Convert</a>
+          <a href="https://imageinkb.com/edit" style="text-decoration:none;color:#334155;">Edit</a>
+          <a href="https://imageinkb.com/zipimg" style="text-decoration:none;color:#334155;">ZipImg</a>
+          <a href="https://imageinkb.com/image-to-pdf" style="text-decoration:none;color:#334155;">Img to PDF</a>
+          <a href="https://imageinkb.com/pdf-to-image" style="text-decoration:none;color:#334155;">PDF to Img</a>
+          <a href="https://imageinkb.com/guides" style="text-decoration:none;color:#334155;">Guides</a>
+        </nav>
+        <h1 style="font-size:2.2rem;font-weight:900;color:#0f172a;margin-bottom:8px;line-height:1.2;">${route.h1}</h1>
+        <p style="font-size:1.1rem;color:#475569;margin-bottom:12px;">${route.subtitle}</p>
+        <p style="font-size:0.92rem;color:#64748b;max-width:700px;margin:0 auto 20px;line-height:1.5;">${route.description}</p>
+      </header>
+
+      <main style="max-width:900px;margin:0 auto;padding:0 20px 40px;font-family:system-ui,-apple-system,sans-serif;">
+        <section style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
+          <h2 style="font-size:1.25rem;font-weight:700;color:#0f172a;margin-bottom:12px;">How to Compress & Optimize Images Online</h2>
+          <ol style="font-size:0.95rem;color:#334155;line-height:1.8;padding-left:20px;margin-bottom:16px;">
+            <li><strong>Upload Photo or PDF:</strong> Select your JPG, PNG, WebP image or PDF document. All processing runs 100% in your device RAM without uploading to servers.</li>
+            <li><strong>Select Target Size or Dimensions:</strong> Set your exact target file size in KB (e.g. 20KB, 50KB, 100KB, 200KB) or specify custom pixel width and height.</li>
+            <li><strong>Download Instantly:</strong> Download the perfectly optimized image or multi-page ZIP archive ready for portal submissions.</li>
+          </ol>
+        </section>
+
+        <section style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
+          <h2 style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:14px;">Official Portal Upload Size Specifications</h2>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:0.9rem;text-align:left;">
+              <thead>
+                <tr style="border-bottom:2px solid #e2e8f0;color:#0f172a;">
+                  <th style="padding:10px 12px;">Portal / Form</th>
+                  <th style="padding:10px 12px;">Photo Specs</th>
+                  <th style="padding:10px 12px;">Signature Specs</th>
+                  <th style="padding:10px 12px;">Direct Tool</th>
+                </tr>
+              </thead>
+              <tbody style="color:#334155;">
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:10px 12px;font-weight:600;">SSC (CGL / CHSL / MTS)</td>
+                  <td style="padding:10px 12px;">20 KB – 50 KB (3.5×4.5cm)</td>
+                  <td style="padding:10px 12px;">10 KB – 20 KB (4.0×2.0cm)</td>
+                  <td style="padding:10px 12px;"><a href="https://imageinkb.com/ssc-signature-compressor" style="color:#4f46e5;font-weight:bold;text-decoration:none;">SSC Compressor &rarr;</a></td>
+                </tr>
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:10px 12px;font-weight:600;">UPSC (Civil Services / NDA)</td>
+                  <td style="padding:10px 12px;">20 KB – 300 KB (350×350px)</td>
+                  <td style="padding:10px 12px;">20 KB – 300 KB (350×350px)</td>
+                  <td style="padding:10px 12px;"><a href="https://imageinkb.com/upsc-signature-compressor" style="color:#4f46e5;font-weight:bold;text-decoration:none;">UPSC Compressor &rarr;</a></td>
+                </tr>
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                  <td style="padding:10px 12px;font-weight:600;">Bank Exams (IBPS / SBI)</td>
+                  <td style="padding:10px 12px;">20 KB – 50 KB (200×230px)</td>
+                  <td style="padding:10px 12px;">10 KB – 20 KB (140×60px)</td>
+                  <td style="padding:10px 12px;"><a href="https://imageinkb.com/compress-signature-to-10kb" style="color:#4f46e5;font-weight:bold;text-decoration:none;">10KB Signature &rarr;</a></td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 12px;font-weight:600;">Passport & US Visa</td>
+                  <td style="padding:10px 12px;">Under 240 KB (2×2 inch / 600×600px)</td>
+                  <td style="padding:10px 12px;">Under 50 KB</td>
+                  <td style="padding:10px 12px;"><a href="https://imageinkb.com/passport-photo" style="color:#4f46e5;font-weight:bold;text-decoration:none;">Passport Resizer &rarr;</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
+          <h2 style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:12px;">Frequently Asked Questions (FAQ)</h2>
+          <div style="font-size:0.9rem;color:#334155;line-height:1.6;">
+            <h3 style="font-size:1rem;font-weight:700;color:#0f172a;margin:16px 0 4px;">Is Image In Kb completely free to use?</h3>
+            <p style="margin-bottom:12px;">Yes, all tools including exact KB compressor, image resizer, format converter, and PDF to image tools are 100% free with no account or watermarks required.</p>
+            
+            <h3 style="font-size:1rem;font-weight:700;color:#0f172a;margin:16px 0 4px;">Are my images uploaded to any server?</h3>
+            <p style="margin-bottom:12px;">No. Image In Kb operates entirely on client-side WebAssembly and HTML5 Canvas inside your local browser. Your photos and sensitive documents are never uploaded to any remote server.</p>
+
+            <h3 style="font-size:1rem;font-weight:700;color:#0f172a;margin:16px 0 4px;">How does target KB compression work without losing clarity?</h3>
+            <p style="margin-bottom:12px;">Our engine uses an iterative binary search algorithm to calculate the exact optimal JPEG/WebP quantization tables, preserving sharp text and facial clarity while reaching the exact target file size.</p>
+          </div>
+        </section>
+      </main>
+    `;
+  }
+
+  const staticRootContent = `
+    ${bodyContent}
     <footer style="text-align:center;padding:24px 20px;border-top:1px solid #e2e8f0;font-size:0.8rem;color:#94a3b8;font-family:system-ui,-apple-system,sans-serif;">
       <p style="margin:0 0 8px;">© ${new Date().getFullYear()} Image In Kb. Fast, private, and zero-storage image optimization platform.</p>
       <p style="margin:0;">
         <a href="https://imageinkb.com/privacy-policy" style="color:#64748b;margin:0 8px;text-decoration:none;">Privacy Policy</a> •
         <a href="https://imageinkb.com/terms" style="color:#64748b;margin:0 8px;text-decoration:none;">Terms of Service</a> •
-        <a href="https://imageinkb.com/contact" style="color:#64748b;margin:0 8px;text-decoration:none;">Contact Support</a>
+        <a href="https://imageinkb.com/contact" style="color:#64748b;margin:0 8px;text-decoration:none;">Contact Support</a> •
+        <a href="https://imageinkb.com/guides" style="color:#64748b;margin:0 8px;text-decoration:none;">Guides & Tutorials</a>
       </p>
     </footer>
   `;
@@ -511,4 +630,4 @@ for (const route of ROUTES) {
   count++;
 }
 
-console.log(`✅ Successfully pre-rendered static HTML files for all ${count} routes into dist/!\n`);
+console.log(`✅ Successfully pre-rendered rich static HTML files for all ${count} routes into dist/!\n`);
