@@ -440,29 +440,69 @@ for (const route of ROUTES) {
   `;
   html = html.replace('</head>', `${ogTags}\n</head>`);
 
-  // Inject Static SEO Prerender Content inside <div id="root">
+  // Inject Rich Static SEO Prerender Content inside <div id="root">
   const staticRootContent = `
-    <header class="sr-only">
-      <h1>${route.h1}</h1>
-      <p>${route.subtitle}</p>
-      <p>${route.description}</p>
+    <header style="padding:24px 20px;text-align:center;max-width:900px;margin:0 auto;">
+      <nav style="margin-bottom:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:13px;">
+        <a href="https://imageinkb.com/" style="font-weight:bold;color:#4f46e5;text-decoration:none;">Image In Kb</a>
+        <a href="https://imageinkb.com/compress" style="text-decoration:none;color:#334155;">Compress</a>
+        <a href="https://imageinkb.com/resize" style="text-decoration:none;color:#334155;">Resize</a>
+        <a href="https://imageinkb.com/convert" style="text-decoration:none;color:#334155;">Convert</a>
+        <a href="https://imageinkb.com/edit" style="text-decoration:none;color:#334155;">Edit</a>
+        <a href="https://imageinkb.com/zipimg" style="text-decoration:none;color:#334155;">ZipImg</a>
+        <a href="https://imageinkb.com/image-to-pdf" style="text-decoration:none;color:#334155;">Img to PDF</a>
+        <a href="https://imageinkb.com/pdf-to-image" style="text-decoration:none;color:#334155;">PDF to Img</a>
+        <a href="https://imageinkb.com/guides" style="text-decoration:none;color:#334155;">Guides</a>
+      </nav>
+      <h1 style="font-size:2rem;font-weight:900;color:#0f172a;margin-bottom:8px;line-height:1.2;">${route.h1}</h1>
+      <p style="font-size:1.05rem;color:#475569;margin-bottom:12px;">${route.subtitle}</p>
+      <p style="font-size:0.9rem;color:#64748b;max-width:700px;margin:0 auto 20px;line-height:1.5;">${route.description}</p>
     </header>
-    <main class="sr-only">
-      <section>
-        <h2>Online Image Compressor, Resizer & PDF Converter</h2>
-        <p>Image In Kb provides in-browser, private, and zero-upload image optimization. Convert, resize, and compress JPG, PNG, WebP, and PDF documents to exact target file sizes in KB.</p>
-        <ul>
-          <li><a href="https://imageinkb.com/compress">Target KB Compressor</a></li>
-          <li><a href="https://imageinkb.com/compress-image-to-50kb">Compress to 50KB</a></li>
-          <li><a href="https://imageinkb.com/compress-image-to-20kb">Compress to 20KB</a></li>
-          <li><a href="https://imageinkb.com/signature-compressor">Signature Compressor</a></li>
-          <li><a href="https://imageinkb.com/passport-photo">Passport Photo Resizer</a></li>
-          <li><a href="https://imageinkb.com/pdf-to-image">PDF to Image (JPG/PNG)</a></li>
-          <li><a href="https://imageinkb.com/edit">Crop & Rotate Image</a></li>
-          <li><a href="https://imageinkb.com/guides">Guides & Tutorials</a></li>
+    <main style="max-width:900px;margin:0 auto;padding:0 20px 40px;font-family:system-ui,-apple-system,sans-serif;">
+      <section style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
+        <h2 style="font-size:1.2rem;font-weight:700;color:#0f172a;margin-bottom:12px;">Fast, In-Memory Image Optimization & PDF Engine</h2>
+        <p style="font-size:0.9rem;color:#334155;line-height:1.6;margin-bottom:16px;">
+          Image In Kb provides browser-based, private image compression, resizing, format conversion, and cropping with zero server uploads and 100% data confidentiality.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:12px;">
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+            <h3 style="font-size:0.9rem;font-weight:700;color:#0f172a;margin-bottom:4px;">🔒 100% Private In-Browser Engine</h3>
+            <p style="font-size:0.8rem;color:#64748b;margin:0;line-height:1.4;">Photos and signatures never leave your device. Everything processes in temporary RAM buffers.</p>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+            <h3 style="font-size:0.9rem;font-weight:700;color:#0f172a;margin-bottom:4px;">🎯 Exact Target KB Tuning</h3>
+            <p style="font-size:0.8rem;color:#64748b;margin:0;line-height:1.4;">Binary search quality algorithms ensure your files match exact 20KB, 50KB, or 100KB portal limits.</p>
+          </div>
+          <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:14px;">
+            <h3 style="font-size:0.9rem;font-weight:700;color:#0f172a;margin-bottom:4px;">📄 PDF to Image & Img to PDF</h3>
+            <p style="font-size:0.8rem;color:#64748b;margin:0;line-height:1.4;">Extract multi-page PDF documents to high-resolution JPG/PNG images or create printable PDFs.</p>
+          </div>
+        </div>
+      </section>
+
+      <section style="background:#ffffff;border:1px solid #e2e8f0;border-radius:16px;padding:24px;margin-bottom:24px;">
+        <h2 style="font-size:1.15rem;font-weight:700;color:#0f172a;margin-bottom:12px;">Popular Online Optimization Tools</h2>
+        <ul style="font-size:0.85rem;color:#334155;line-height:1.8;padding-left:20px;">
+          <li><a href="https://imageinkb.com/compress" style="color:#4f46e5;font-weight:600;text-decoration:none;">Target Size Compressor</a> — Compress images to exact KB limits (50KB, 100KB, 200KB)</li>
+          <li><a href="https://imageinkb.com/compress-image-to-50kb" style="color:#4f46e5;font-weight:600;text-decoration:none;">Compress Image to 50KB</a> — The standard 50KB preset for online exam and job forms</li>
+          <li><a href="https://imageinkb.com/compress-image-to-20kb" style="color:#4f46e5;font-weight:600;text-decoration:none;">Compress Image to 20KB</a> — Strict 20KB preset for signatures and banking portals</li>
+          <li><a href="https://imageinkb.com/signature-compressor" style="color:#4f46e5;font-weight:600;text-decoration:none;">Signature Compressor</a> — Compress signatures under 10KB, 20KB with paper whitening</li>
+          <li><a href="https://imageinkb.com/passport-photo" style="color:#4f46e5;font-weight:600;text-decoration:none;">Passport Photo Resizer</a> — US 2x2", Schengen 35x45mm, and exam dimensions</li>
+          <li><a href="https://imageinkb.com/pdf-to-image" style="color:#4f46e5;font-weight:600;text-decoration:none;">PDF to Image Converter</a> — Extract PDF pages to 150-300 DPI JPG, PNG, and ZIP</li>
+          <li><a href="https://imageinkb.com/image-to-pdf" style="color:#4f46e5;font-weight:600;text-decoration:none;">Image to PDF Converter</a> — Combine multiple images into printable PDF documents</li>
+          <li><a href="https://imageinkb.com/edit" style="color:#4f46e5;font-weight:600;text-decoration:none;">Crop & Rotate Image</a> — Aspect ratio cropping, Name & DOB stamps on photos</li>
+          <li><a href="https://imageinkb.com/guides" style="color:#4f46e5;font-weight:600;text-decoration:none;">Guides & Tutorials</a> — Step-by-step upload guidelines for SSC, UPSC, and passport photos</li>
         </ul>
       </section>
     </main>
+    <footer style="text-align:center;padding:24px 20px;border-top:1px solid #e2e8f0;font-size:0.8rem;color:#94a3b8;font-family:system-ui,-apple-system,sans-serif;">
+      <p style="margin:0 0 8px;">© ${new Date().getFullYear()} Image In Kb. Fast, private, and zero-storage image optimization platform.</p>
+      <p style="margin:0;">
+        <a href="https://imageinkb.com/privacy-policy" style="color:#64748b;margin:0 8px;text-decoration:none;">Privacy Policy</a> •
+        <a href="https://imageinkb.com/terms" style="color:#64748b;margin:0 8px;text-decoration:none;">Terms of Service</a> •
+        <a href="https://imageinkb.com/contact" style="color:#64748b;margin:0 8px;text-decoration:none;">Contact Support</a>
+      </p>
+    </footer>
   `;
 
   html = html.replace('<div id="root"></div>', `<div id="root">${staticRootContent}</div>`);
