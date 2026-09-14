@@ -153,8 +153,17 @@ export default {
     // Static Asset Delivery
     let response = await env.ASSETS.fetch(request);
     
-    // SPA fallback: If asset not found and not a file with extension, serve index.html
-    if (response.status === 404 && !url.pathname.split('/').pop().includes('.')) {
+    // If Cloudflare returns a 307 redirect or 404 for a route without file extension,
+    // directly serve the pre-rendered index.html for that specific route with 200 OK
+    if ((response.status === 307 || response.status === 404) && !url.pathname.split('/').pop().includes('.')) {
+      const cleanPath = url.pathname.replace(/\/+$/, '');
+      const directRouteRequest = new Request(new URL(`${cleanPath}/index.html`, request.url), request);
+      const directResponse = await env.ASSETS.fetch(directRouteRequest);
+      if (directResponse.status === 200) {
+        return directResponse;
+      }
+      
+      // Fallback to root index.html if route is not specifically pre-rendered
       const indexRequest = new Request(new URL('/index.html', request.url), request);
       response = await env.ASSETS.fetch(indexRequest);
     }
