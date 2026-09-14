@@ -10,6 +10,8 @@ Allow: /pdf-to-image
 Allow: /image-to-pdf
 Allow: /batch
 Allow: /zipimg
+Allow: /guides
+Allow: /blog
 Allow: /tools
 Allow: /compress-image-to-50kb
 Allow: /compress-image-to-100kb

@@ -55,6 +55,7 @@ export default function Footer() {
             <span className="font-bold text-slate-900 dark:text-white">Platform & Hub</span>
             <ul className="space-y-2 text-slate-600 dark:text-slate-400">
               <li><Link to="/tools" className="hover:text-indigo-600 dark:hover:text-white transition-colors">All Tools Directory</Link></li>
+              <li><Link to="/guides" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Guides & Tutorials</Link></li>
               <li><Link to="/calculator" className="hover:text-indigo-600 dark:hover:text-white transition-colors">Size Unit Calculator</Link></li>
               <li><Link to="/dashboard" className="hover:text-indigo-600 dark:hover:text-white transition-colors">User Dashboard</Link></li>
               <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-indigo-600 dark:hover:text-white transition-colors">XML Sitemap</a></li>

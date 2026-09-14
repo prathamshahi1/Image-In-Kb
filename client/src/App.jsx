@@ -17,6 +17,8 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ToolsHub from './pages/ToolsHub';
+import GuidesHub from './pages/GuidesHub';
+import GuideDetail from './pages/GuideDetail';
 import SeoPresetCompressor from './pages/SeoPresetCompressor';
 import PassportPhoto from './pages/PassportPhoto';
 import SignatureCompressor from './pages/SignatureCompressor';
@@ -51,6 +53,12 @@ export default function App() {
                 <Route path="/pdf-to-png" element={<PdfToImage />} />
                 <Route path="/pdf-to-img" element={<PdfToImage />} />
                 <Route path="/calculator" element={<Calculator />} />
+
+                {/* Guides & Blog Hub */}
+                <Route path="/guides" element={<GuidesHub />} />
+                <Route path="/blog" element={<GuidesHub />} />
+                <Route path="/guides/:slug" element={<GuideDetail />} />
+                <Route path="/blog/:slug" element={<GuideDetail />} />
 
                 {/* Tools Directory */}
                 <Route path="/tools" element={<ToolsHub />} />
